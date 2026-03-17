@@ -117,6 +117,9 @@ export function RunConsolePage() {
             <Link to="/settings" className="ghost-link">
               Settings
             </Link>
+            <Link to="/shortlist" className="ghost-link">
+              Shortlist
+            </Link>
           </div>
         </div>
 

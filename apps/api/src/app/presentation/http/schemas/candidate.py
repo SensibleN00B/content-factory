@@ -10,6 +10,8 @@ class CandidateOut(BaseModel):
     run_id: int
     topic_cluster_id: int
     canonical_topic: str
+    source_count: int
+    signal_count: int
     trend_score: float
     why_now: str | None
     labels: list[str]

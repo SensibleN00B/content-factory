@@ -54,6 +54,8 @@ def get_candidates(
                 run_id=candidate.run_id,
                 topic_cluster_id=topic_cluster.id,
                 canonical_topic=topic_cluster.canonical_topic,
+                source_count=topic_cluster.source_count,
+                signal_count=topic_cluster.signal_count,
                 trend_score=round(candidate.trend_score, 2),
                 why_now=candidate.why_now,
                 labels=labels,

@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router-dom";
 
 import { HomePage } from "./pages/HomePage";
 import { RunConsolePage } from "./pages/RunConsolePage";
+import { ShortlistPage } from "./pages/ShortlistPage";
 import { SettingsPage } from "./pages/SettingsPage";
 
 export function App() {
@@ -9,6 +10,7 @@ export function App() {
     <Routes>
       <Route path="/" element={<HomePage />} />
       <Route path="/runs" element={<RunConsolePage />} />
+      <Route path="/shortlist" element={<ShortlistPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

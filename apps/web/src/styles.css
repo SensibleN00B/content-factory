@@ -149,7 +149,20 @@ h1 {
   gap: 12px;
 }
 
+.filter-grid {
+  margin-top: 12px;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 1fr 2fr;
+}
+
 .settings-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.filter-grid label {
   display: grid;
   gap: 6px;
   font-size: 14px;
@@ -281,6 +294,10 @@ h1 {
 
   .panel-links {
     width: 100%;
+  }
+
+  .filter-grid {
+    grid-template-columns: 1fr;
   }
 }
 

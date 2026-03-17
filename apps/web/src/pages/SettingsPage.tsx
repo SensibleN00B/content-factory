@@ -168,6 +168,9 @@ export function SettingsPage() {
             <Link to="/runs" className="ghost-link">
               Run console
             </Link>
+            <Link to="/shortlist" className="ghost-link">
+              Shortlist
+            </Link>
           </div>
         </div>
 

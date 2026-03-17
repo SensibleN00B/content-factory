@@ -40,6 +40,19 @@ export type RunResponse = {
   sources: RunSource[];
 };
 
+export type CandidateResponse = {
+  id: number;
+  run_id: number;
+  topic_cluster_id: number;
+  canonical_topic: string;
+  source_count: number;
+  signal_count: number;
+  trend_score: number;
+  why_now: string | null;
+  labels: string[];
+  created_at: string;
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 export async function getHealthStatus(): Promise<HealthStatus> {
@@ -123,4 +136,37 @@ export async function getRun(runId: number): Promise<RunResponse> {
   }
 
   return (await response.json()) as RunResponse;
+}
+
+export async function getCandidates(params: {
+  runId?: number;
+  excludeLabels?: string[];
+} = {}): Promise<CandidateResponse[]> {
+  const search = new URLSearchParams();
+  if (params.runId !== undefined) {
+    search.set("run_id", String(params.runId));
+  }
+  for (const label of params.excludeLabels ?? []) {
+    const normalized = label.trim();
+    if (!normalized) {
+      continue;
+    }
+    search.append("exclude_labels", normalized);
+  }
+
+  const query = search.toString();
+  const url = query ? `${API_BASE_URL}/api/candidates?${query}` : `${API_BASE_URL}/api/candidates`;
+
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Candidates fetch failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as CandidateResponse[];
 }

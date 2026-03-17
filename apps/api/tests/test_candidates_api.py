@@ -136,6 +136,8 @@ def test_get_candidates_returns_candidates_sorted_by_score() -> None:
     assert len(body) == 2
     assert [item["trend_score"] for item in body] == [85.0, 72.0]
     assert body[0]["canonical_topic"] == "AI workflow for clinics"
+    assert body[0]["source_count"] == 3
+    assert body[0]["signal_count"] == 4
 
 
 def test_get_candidates_excludes_topics_with_requested_labels() -> None:
