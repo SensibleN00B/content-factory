@@ -43,6 +43,7 @@
 - `FE-002`: settings page implemented with profile form and `GET/PUT /api/profile` integration
 - `FE-003`: run console implemented (`POST /api/runs`, polling `GET /api/runs/{id}`, per-source status)
 - `FE-004`: shortlist page implemented (score, sources, why-now summary + label exclusions)
+- `FE-005`: topic details page implemented (evidence links, score breakdown, generated angles)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -53,7 +54,7 @@
 
 ## Latest Commit
 
-- `9e36bad` - `feat: add shortlist page and enrich candidates source metrics`
+- `cf0ed26` - `feat: add topic details view with candidate evidence and angles`
 
 ## Key Decisions
 
@@ -63,7 +64,7 @@
 
 ## Next Up
 
-- `FE-005`: topic details page (evidence links + angles)
+- `FE-006`: label actions + `exclude_labels` UI chips (including `Only new`)
 
 ## Open Risks
 
