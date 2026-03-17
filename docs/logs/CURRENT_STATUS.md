@@ -23,6 +23,7 @@
 - `BE-004`: profile API (`GET/PUT /api/profile`) with DB persistence + update-in-place behavior
 - `BE-005`: run state machine with strict transition validation and terminal-state guards
 - `BE-006`: run APIs implemented (`POST /api/runs`, `GET /api/runs/{id}`)
+- `SRC-001`: source adapter contract (`SourceConnector`) + source registry
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -33,7 +34,7 @@
 
 ## Latest Commit
 
-- `74817a4` - `feat: add run creation and status endpoints`
+- `3483d29` - `feat: add source connector contract and registry`
 
 ## Key Decisions
 
@@ -43,7 +44,7 @@
 
 ## Next Up
 
-- `SRC-001`: Source adapter contract (`SourceConnector`) + registry
+- `SRC-002`: Reddit collector (auth + query + mapping to RawSignal)
 
 ## Open Risks
 
