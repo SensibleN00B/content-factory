@@ -47,6 +47,7 @@
 - `FE-006`: shortlist label actions + `exclude_labels` chips implemented (including `Only new`)
 - `QA-001`: backend unit/integration tests expanded for critical curation and run-status flows
 - `QA-002`: collector contract tests + trend pipeline integration tests with fixture sources
+- `QA-003`: frontend integration flow test added for Settings -> Run -> Shortlist -> Label journey
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -57,7 +58,7 @@
 
 ## Latest Commit
 
-- `79b95f9` - `test: add collector contract and trend pipeline integration coverage`
+- `bcabc42` - `test: add frontend integration flow coverage for core ui journey`
 
 ## Key Decisions
 
@@ -67,9 +68,9 @@
 
 ## Next Up
 
-- `QA-003`: frontend integration/e2e tests for core user flows
+- `OBS-001`: structured logging and run metrics (`duration`, `source_failures`, `candidate_count`)
 
 ## Open Risks
 
 - Collector API keys are not configured yet (`.env` values pending)
-- Frontend test layer is not implemented yet (e2e planned in `QA-003`)
+- Browser-level Playwright e2e is not added yet (current QA-003 is integration test via Vitest)
