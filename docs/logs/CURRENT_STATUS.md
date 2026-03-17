@@ -26,6 +26,7 @@
 - `SRC-001`: source adapter contract (`SourceConnector`) + source registry
 - `SRC-002`: Reddit collector implemented (OAuth auth + query + signal mapping)
 - `SRC-003`: Hacker News collector implemented (query + signal mapping)
+- `SRC-004`: Google Trends collector implemented (region/language query + signal mapping + failure handling)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -36,7 +37,7 @@
 
 ## Latest Commit
 
-- `0194be9` - `feat: add hackernews collector and api client`
+- `cd2200a` - `feat: add google trends collector with region query handling`
 
 ## Key Decisions
 
@@ -46,7 +47,7 @@
 
 ## Next Up
 
-- `SRC-004`: Google Trends collector
+- `SRC-005`: Product Hunt collector
 
 ## Open Risks
 
