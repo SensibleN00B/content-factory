@@ -43,6 +43,17 @@ body {
   animation: rise 260ms ease-out;
 }
 
+.settings-panel {
+  max-width: 980px;
+}
+
+.panel-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   font-size: 13px;
@@ -107,6 +118,90 @@ h1 {
 .error {
   margin: 0;
   color: var(--error);
+}
+
+.ghost-link {
+  display: inline-flex;
+  align-items: center;
+  height: 38px;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  padding: 0 14px;
+  color: var(--text);
+  text-decoration: none;
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.ghost-link:hover {
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.settings-form {
+  margin-top: 18px;
+  display: grid;
+  gap: 12px;
+}
+
+.settings-form label {
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.settings-form input,
+.settings-form textarea {
+  width: 100%;
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.72);
+  color: var(--text);
+  padding: 10px 12px;
+  font: inherit;
+}
+
+.settings-form textarea {
+  resize: vertical;
+}
+
+.settings-form input:focus,
+.settings-form textarea:focus {
+  outline: 2px solid rgba(74, 192, 247, 0.45);
+  border-color: rgba(74, 192, 247, 0.55);
+}
+
+.settings-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.settings-actions button {
+  height: 40px;
+  border-radius: 12px;
+  border: none;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 600;
+  color: #fff;
+  background: linear-gradient(135deg, #0f766e, #2563eb);
+  cursor: pointer;
+}
+
+.settings-actions button[disabled] {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+@media (max-width: 720px) {
+  .panel {
+    padding: 20px;
+  }
+
+  .panel-head {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }
 
 @keyframes rise {

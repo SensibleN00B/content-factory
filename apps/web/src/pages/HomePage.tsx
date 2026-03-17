@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
 
 import { getHealthStatus, type HealthStatus } from "../lib/api";
 
@@ -37,11 +38,18 @@ export function HomePage() {
   return (
     <main className="page">
       <section className="panel">
-        <p className="eyebrow">Trend Discovery MVP</p>
-        <h1>Content Factory Control Room</h1>
-        <p className="subtitle">
-          Frontend scaffold is live. Next steps: settings form, run console, shortlist.
-        </p>
+        <div className="panel-head">
+          <div>
+            <p className="eyebrow">Trend Discovery MVP</p>
+            <h1>Content Factory Control Room</h1>
+            <p className="subtitle">
+              Frontend scaffold is live. Next steps: run console and shortlist views.
+            </p>
+          </div>
+          <Link to="/settings" className="ghost-link">
+            Open settings
+          </Link>
+        </div>
         <div className="health-card">
           <h2>API Health</h2>
           {healthState.status === "loading" && <p className="muted">Checking backend...</p>}
