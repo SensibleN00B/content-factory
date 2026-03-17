@@ -7,6 +7,12 @@ from app.domain.processing.relevance_filter import (
     RelevanceFilterResult,
     SignalRelevanceFilter,
 )
+from app.domain.processing.scorer import (
+    ScoredTopicCandidate,
+    ScoringConfig,
+    ScoringWeights,
+    TopicScorer,
+)
 
 __all__ = [
     "DeduplicationResult",
@@ -14,9 +20,13 @@ __all__ = [
     "NormalizedSignal",
     "RelevanceFilterConfig",
     "RelevanceFilterResult",
+    "ScoredTopicCandidate",
+    "ScoringConfig",
+    "ScoringWeights",
     "SignalClusterer",
     "SignalDeduplicator",
     "SignalNormalizer",
     "SignalRelevanceFilter",
     "TopicClusterDraft",
+    "TopicScorer",
 ]
