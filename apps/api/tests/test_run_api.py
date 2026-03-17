@@ -80,6 +80,13 @@ def test_post_runs_creates_pending_run_with_input_snapshot() -> None:
     assert body["input_snapshot"]["language"] == "en"
     assert len(body["sources"]) == 5
     assert {source["status"] for source in body["sources"]} == {"pending"}
+    assert [source["source"] for source in body["sources"]] == [
+        "google_trends",
+        "hackernews",
+        "producthunt",
+        "reddit",
+        "youtube",
+    ]
 
 
 def test_get_run_by_id_returns_run_status() -> None:
@@ -97,6 +104,13 @@ def test_get_run_by_id_returns_run_status() -> None:
     assert body["id"] == run_id
     assert body["status"] == "pending"
     assert len(body["sources"]) == 5
+    assert [source["source"] for source in body["sources"]] == [
+        "google_trends",
+        "hackernews",
+        "producthunt",
+        "reddit",
+        "youtube",
+    ]
 
 
 def test_get_run_by_id_returns_404_when_not_found() -> None:

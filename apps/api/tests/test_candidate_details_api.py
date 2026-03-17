@@ -8,7 +8,14 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.infrastructure.db.base import Base
-from app.infrastructure.db.models import ContentCandidate, Profile, Run, TopicCluster
+from app.infrastructure.db.models import (
+    ContentCandidate,
+    Profile,
+    Run,
+    TopicCluster,
+    TopicLabelLink,
+)
+from app.infrastructure.db.seeds import ensure_default_labels
 from app.infrastructure.db.session import get_db_session
 from app.main import create_app
 
@@ -96,6 +103,11 @@ def seed_candidate(db_session: Session) -> int:
     db_session.commit()
     db_session.refresh(candidate)
 
+    labels = ensure_default_labels(db_session)
+    watchlist = next(item for item in labels if item.name == "watchlist")
+    db_session.add(TopicLabelLink(topic_cluster_id=cluster.id, label_id=watchlist.id))
+    db_session.commit()
+
     return candidate.id
 
 
@@ -113,6 +125,7 @@ def test_get_candidate_details_returns_evidence_and_angles() -> None:
     assert body["evidence_urls"] == ["https://example.com/1", "https://example.com/2"]
     assert body["angles"] == ["Angle 1", "Angle 2", "Angle 3"]
     assert "velocity" in body["score_breakdown"]
+    assert body["labels"] == ["watchlist"]
 
 
 def test_get_candidate_details_returns_404_for_unknown_id() -> None:

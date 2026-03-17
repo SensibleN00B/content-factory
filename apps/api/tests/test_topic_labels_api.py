@@ -156,3 +156,25 @@ def test_post_topic_label_returns_404_for_unknown_topic() -> None:
     response = client.post("/api/topics/999/labels", json={"label": "watchlist"})
 
     assert response.status_code == 404
+
+
+def test_post_topic_label_returns_404_for_unknown_label() -> None:
+    client, session_factory = make_client()
+    with session_factory() as db_session:
+        cluster = seed_topic_cluster(db_session)
+        ensure_default_labels(db_session)
+
+    response = client.post(f"/api/topics/{cluster.id}/labels", json={"label": "unknown_label"})
+
+    assert response.status_code == 404
+
+
+def test_delete_topic_label_returns_404_when_link_missing() -> None:
+    client, session_factory = make_client()
+    with session_factory() as db_session:
+        cluster = seed_topic_cluster(db_session)
+        ensure_default_labels(db_session)
+
+    response = client.delete(f"/api/topics/{cluster.id}/labels/watchlist")
+
+    assert response.status_code == 404
