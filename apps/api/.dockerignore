@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.ruff_cache/
+.pytest_cache/
+
+# Git
+.git/
+.gitignore
+
+# Docs / local files not required for image
+README.md
