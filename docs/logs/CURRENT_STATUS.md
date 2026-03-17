@@ -15,7 +15,9 @@
 
 - `ARCH-001`: monorepo skeleton created (`apps/api`, `apps/web`, `packages/contracts`, `infra`)
 - `DEV-001`: baseline tooling and env templates
-- `OPS-001`: Docker Compose stack for `api + db + web` implemented and smoke-tested`n- `DOC-001`: local setup and testing runbook created
+- `OPS-001`: Docker Compose stack for `api + db + web` implemented and smoke-tested
+- `DOC-001`: local setup and testing runbook created
+- `BE-001`: FastAPI layered app skeleton + health router + passing health test
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -26,7 +28,7 @@
 
 ## Latest Commit
 
-- `2ffb906` - `ops: add docker compose stack for api db and web`
+- `af142c7` - `docs: add local setup and testing runbook`
 
 ## Key Decisions
 
@@ -36,11 +38,9 @@
 
 ## Next Up
 
-- `BE-001`: FastAPI layered app skeleton and health router
+- `BE-002`: SQLAlchemy + Alembic integration
 
 ## Open Risks
 
 - Collector API keys are not configured yet (`.env` values pending)
 - Frontend scaffold is still placeholder content (full FE scaffold planned in `FE-001`)
-
-

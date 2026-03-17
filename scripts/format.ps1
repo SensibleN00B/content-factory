@@ -2,7 +2,8 @@ $ErrorActionPreference = "Stop"
 
 Write-Host "==> Format: backend (Python via uv)"
 if (Test-Path "apps/api/pyproject.toml") {
-    uv run --project apps/api --group dev ruff format .
+    uv run --project apps/api --group dev ruff format apps/api/src apps/api/tests
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 } else {
     Write-Host "Skipping backend format: apps/api/pyproject.toml not found."
 }
@@ -10,6 +11,7 @@ if (Test-Path "apps/api/pyproject.toml") {
 Write-Host "==> Format: frontend (Node)"
 if (Test-Path "apps/web/package.json") {
     npm --prefix apps/web run format --if-present
+    if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 } else {
     Write-Host "Skipping frontend format: apps/web/package.json not found."
 }
