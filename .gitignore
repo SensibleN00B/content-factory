@@ -34,7 +34,6 @@ __pycache__/
 *.pyd
 *.pyo
 *.so
-.python-version
 .venv/
 venv/
 env/
