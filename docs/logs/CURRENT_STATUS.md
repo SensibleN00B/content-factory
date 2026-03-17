@@ -37,6 +37,7 @@
 - `PRC-005`: scoring engine implemented (velocity/volume/engagement/relevance/opinionability, weighted)
 - `PRC-006`: explainability output implemented (`why_now`, evidence links, content angles)
 - `CUR-001`: seed label dictionary implemented and queryable via `GET /api/labels`
+- `CUR-002`: topic label APIs implemented (`POST /api/topics/{id}/labels`, `DELETE /api/topics/{id}/labels/{label}`)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -47,7 +48,7 @@
 
 ## Latest Commit
 
-- `4ced775` - `feat: seed default labels and expose labels query api`
+- `d19e08c` - `feat: add topic label add-remove apis`
 
 ## Key Decisions
 
@@ -57,7 +58,7 @@
 
 ## Next Up
 
-- `CUR-002`: label APIs (`POST /topics/{id}/labels`, `DELETE /topics/{id}/labels/{label}`)
+- `CUR-003`: candidate API filters (`exclude_labels`)
 
 ## Open Risks
 
