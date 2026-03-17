@@ -34,6 +34,7 @@
 - `PRC-002`: signal deduplicator implemented (URL/title/topic hash rules + duplicate reason stats)
 - `PRC-003`: signal clusterer implemented (canonical topic grouping + deterministic cluster key)
 - `PRC-004`: relevance filter implemented (niche/ICP/region/language/include/exclude with reasons)
+- `PRC-005`: scoring engine implemented (velocity/volume/engagement/relevance/opinionability, weighted)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -44,7 +45,7 @@
 
 ## Latest Commit
 
-- `268c235` - `feat: add signal relevance filter with auditable reasons`
+- `121e35f` - `feat: add topic scorer with configurable weighted components`
 
 ## Key Decisions
 
@@ -54,7 +55,7 @@
 
 ## Next Up
 
-- `PRC-005`: scoring engine (velocity, volume, engagement, relevance, opinionability)
+- `PRC-006`: explainability output (`why_now`, evidence links, angles)
 
 ## Open Risks
 
