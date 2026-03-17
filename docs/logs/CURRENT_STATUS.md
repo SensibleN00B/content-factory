@@ -20,6 +20,7 @@
 - `BE-001`: FastAPI layered app skeleton + health router + passing health test
 - `BE-002`: SQLAlchemy session layer + Alembic wiring integrated and verified
 - `BE-003`: core schema models + initial Alembic migration implemented and validated
+- `BE-004`: profile API (`GET/PUT /api/profile`) with DB persistence + update-in-place behavior
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -30,7 +31,7 @@
 
 ## Latest Commit
 
-- `415b6dd` - `feat: add core schema models and initial migration`
+- `16b44cd` - `feat: add profile get-put api with db persistence`
 
 ## Key Decisions
 
@@ -40,7 +41,7 @@
 
 ## Next Up
 
-- `BE-004`: Profile API (`GET/PUT /api/profile`) with DB persistence
+- `BE-005`: run state machine (`pending -> collecting -> processing -> scoring -> completed/failed`)
 
 ## Open Risks
 
