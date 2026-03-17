@@ -28,6 +28,7 @@
 - `SRC-003`: Hacker News collector implemented (query + signal mapping)
 - `SRC-004`: Google Trends collector implemented (region/language query + signal mapping + failure handling)
 - `SRC-005`: Product Hunt collector implemented (OAuth + GraphQL + signal mapping)
+- `SRC-006`: YouTube collector implemented (search + quota-aware handling + signal mapping)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -38,7 +39,7 @@
 
 ## Latest Commit
 
-- `8b1017d` - `feat: add producthunt collector with oauth graphql mapping`
+- `b9d341f` - `feat: add youtube collector with quota-aware handling`
 
 ## Key Decisions
 
@@ -48,7 +49,7 @@
 
 ## Next Up
 
-- `SRC-006`: YouTube collector
+- `SRC-007`: retry/timeout and per-source error boundaries
 
 ## Open Risks
 
