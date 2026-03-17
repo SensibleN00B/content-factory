@@ -17,6 +17,12 @@ class AppSettings(BaseModel):
     reddit_user_agent: str = Field(
         default_factory=lambda: os.getenv("REDDIT_USER_AGENT", "content-factory/0.1")
     )
+    producthunt_client_id: str = Field(
+        default_factory=lambda: os.getenv("PRODUCTHUNT_CLIENT_ID", "")
+    )
+    producthunt_client_secret: str = Field(
+        default_factory=lambda: os.getenv("PRODUCTHUNT_CLIENT_SECRET", "")
+    )
 
 
 settings = AppSettings()

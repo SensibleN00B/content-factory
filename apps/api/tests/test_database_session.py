@@ -15,6 +15,11 @@ def test_settings_exposes_reddit_configuration_fields() -> None:
     assert settings.reddit_user_agent
 
 
+def test_settings_exposes_producthunt_configuration_fields() -> None:
+    assert settings.producthunt_client_id is not None
+    assert settings.producthunt_client_secret is not None
+
+
 def test_build_engine_returns_sqlalchemy_engine() -> None:
     engine = build_engine("sqlite+pysqlite:///:memory:")
 

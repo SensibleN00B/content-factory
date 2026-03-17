@@ -6,6 +6,12 @@ from app.infrastructure.sources.hackernews import (
     HackerNewsApiClient,
     HackerNewsSourceConnector,
 )
+from app.infrastructure.sources.producthunt import (
+    ProductHuntApiClient,
+    ProductHuntApiError,
+    ProductHuntCredentials,
+    ProductHuntSourceConnector,
+)
 from app.infrastructure.sources.reddit import (
     RedditApiClient,
     RedditApiError,
@@ -21,6 +27,10 @@ __all__ = [
     "GoogleTrendsSourceConnector",
     "HackerNewsApiClient",
     "HackerNewsSourceConnector",
+    "ProductHuntApiClient",
+    "ProductHuntApiError",
+    "ProductHuntCredentials",
+    "ProductHuntSourceConnector",
     "RedditApiClient",
     "RedditApiError",
     "RedditCredentials",
