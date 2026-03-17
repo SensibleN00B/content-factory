@@ -46,6 +46,7 @@
 - `FE-005`: topic details page implemented (evidence links, score breakdown, generated angles)
 - `FE-006`: shortlist label actions + `exclude_labels` chips implemented (including `Only new`)
 - `QA-001`: backend unit/integration tests expanded for critical curation and run-status flows
+- `QA-002`: collector contract tests + trend pipeline integration tests with fixture sources
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -56,7 +57,7 @@
 
 ## Latest Commit
 
-- `d6ab391` - `test: expand critical backend api coverage for curation flows`
+- `79b95f9` - `test: add collector contract and trend pipeline integration coverage`
 
 ## Key Decisions
 
@@ -66,7 +67,7 @@
 
 ## Next Up
 
-- `QA-002`: collector contract tests and pipeline integration tests
+- `QA-003`: frontend integration/e2e tests for core user flows
 
 ## Open Risks
 
