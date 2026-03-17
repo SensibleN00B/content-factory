@@ -29,6 +29,7 @@
 - `SRC-004`: Google Trends collector implemented (region/language query + signal mapping + failure handling)
 - `SRC-005`: Product Hunt collector implemented (OAuth + GraphQL + signal mapping)
 - `SRC-006`: YouTube collector implemented (search + quota-aware handling + signal mapping)
+- `SRC-007`: ingestion runner implemented with retry/timeout policy and per-source error boundaries
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -39,7 +40,7 @@
 
 ## Latest Commit
 
-- `b9d341f` - `feat: add youtube collector with quota-aware handling`
+- `e6b2d26` - `feat: add ingestion runner with retry timeout boundaries`
 
 ## Key Decisions
 
@@ -49,7 +50,7 @@
 
 ## Next Up
 
-- `SRC-007`: retry/timeout and per-source error boundaries
+- `PRC-001`: normalizer (text cleanup, datetime, engagement harmonization)
 
 ## Open Risks
 
