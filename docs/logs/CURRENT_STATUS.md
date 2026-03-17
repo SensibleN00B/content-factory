@@ -32,6 +32,7 @@
 - `SRC-007`: ingestion runner implemented with retry/timeout policy and per-source error boundaries
 - `PRC-001`: signal normalizer implemented (text cleanup, UTC datetime normalization, engagement harmonization)
 - `PRC-002`: signal deduplicator implemented (URL/title/topic hash rules + duplicate reason stats)
+- `PRC-003`: signal clusterer implemented (canonical topic grouping + deterministic cluster key)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -42,7 +43,7 @@
 
 ## Latest Commit
 
-- `c7f3d63` - `feat: add signal deduplicator with hash-based rules`
+- `557fc73` - `feat: add topic clusterer for canonical topic grouping`
 
 ## Key Decisions
 
@@ -52,7 +53,7 @@
 
 ## Next Up
 
-- `PRC-003`: clusterer (canonical topic creation)
+- `PRC-004`: relevance filter (niche/ICP/region/language/include/exclude)
 
 ## Open Risks
 
