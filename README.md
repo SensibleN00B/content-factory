@@ -19,6 +19,7 @@
 ## Baseline Tooling Commands
 
 - Install backend deps: `uv sync --project apps/api --group dev`
+- Install frontend deps: `npm --prefix apps/web install`
 - Lint: `pwsh ./scripts/lint.ps1`
 - Format: `pwsh ./scripts/format.ps1`
 - Test: `pwsh ./scripts/test.ps1`
@@ -28,7 +29,7 @@
 - Start stack: `docker compose -f infra/docker-compose.yml up --build -d`
 - Stop stack: `docker compose -f infra/docker-compose.yml down`
 - API health: `http://localhost:8000/health`
-- Web placeholder: `http://localhost:5173`
+- Web endpoint: `http://localhost:5173`
 
 ## Environment Template
 
@@ -38,11 +39,6 @@
 
 - Current state: `docs/logs/CURRENT_STATUS.md`
 - Daily logs: `docs/logs/YYYY-MM-DD-session.md`
-
-## Next Milestones
-
-- `DOC-001`: local setup and testing runbook
-- `BE-001`: FastAPI layered skeleton
 
 ## Runbook
 

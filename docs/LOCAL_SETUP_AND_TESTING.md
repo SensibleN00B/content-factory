@@ -34,6 +34,12 @@ uv sync --project apps/api --group dev
 
 ## 4. Developer Checks
 
+Install frontend dependencies:
+
+```powershell
+npm --prefix apps/web install
+```
+
 Run baseline checks from repository root:
 
 ```powershell
@@ -43,7 +49,6 @@ pwsh ./scripts/test.ps1
 ```
 
 Notes:
-- Frontend checks may show `Skipping...` until `FE-001` scaffold is implemented.
 - Backend tests may show `Skipping...` if `apps/api/tests` does not exist yet.
 
 ## 5. Run with Docker Compose
@@ -85,12 +90,12 @@ Resume workflow:
 
 ## 7. Common Issues
 
-1. `shell_command` failures in sandbox:
-- Run commands with escalated permissions in this environment.
-
-2. `docker compose` fails to start:
+1. `docker compose` fails to start:
 - Ensure Docker Desktop is running.
 - Check ports `5432`, `8000`, and `5173` are not occupied.
 
-3. `uv` command not found:
+2. `uv` command not found:
 - Install uv and re-open terminal.
+
+3. `npm --prefix apps/web run lint` fails because `tsc` is missing:
+- Run `npm --prefix apps/web install`.
