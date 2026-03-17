@@ -39,6 +39,7 @@
 - `CUR-001`: seed label dictionary implemented and queryable via `GET /api/labels`
 - `CUR-002`: topic label APIs implemented (`POST /api/topics/{id}/labels`, `DELETE /api/topics/{id}/labels/{label}`)
 - `CUR-003`: candidates API implemented with `exclude_labels` filtering
+- `FE-001`: React + TypeScript + Vite scaffold implemented with routing and API health client
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -49,7 +50,7 @@
 
 ## Latest Commit
 
-- `949be5d` - `feat: add candidates api with exclude-label filters`
+- `c1dc594` - `feat: scaffold web app with vite react routing and health client`
 
 ## Key Decisions
 
@@ -59,9 +60,9 @@
 
 ## Next Up
 
-- `FE-001`: React + TypeScript + Vite scaffold, routing, API client
+- `FE-002`: settings page for profile input
 
 ## Open Risks
 
 - Collector API keys are not configured yet (`.env` values pending)
-- Frontend scaffold is still placeholder content (full FE scaffold planned in `FE-001`)
+- Frontend test layer is not implemented yet (e2e planned in `QA-003`)
