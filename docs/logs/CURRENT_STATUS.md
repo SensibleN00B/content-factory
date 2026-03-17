@@ -21,6 +21,7 @@
 - `BE-002`: SQLAlchemy session layer + Alembic wiring integrated and verified
 - `BE-003`: core schema models + initial Alembic migration implemented and validated
 - `BE-004`: profile API (`GET/PUT /api/profile`) with DB persistence + update-in-place behavior
+- `BE-005`: run state machine with strict transition validation and terminal-state guards
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -31,7 +32,7 @@
 
 ## Latest Commit
 
-- `16b44cd` - `feat: add profile get-put api with db persistence`
+- `7b831ed` - `feat: add run state machine with transition validation`
 
 ## Key Decisions
 
@@ -41,7 +42,7 @@
 
 ## Next Up
 
-- `BE-005`: run state machine (`pending -> collecting -> processing -> scoring -> completed/failed`)
+- `BE-006`: Run APIs (`POST /api/runs`, `GET /api/runs/{id}`)
 
 ## Open Risks
 
