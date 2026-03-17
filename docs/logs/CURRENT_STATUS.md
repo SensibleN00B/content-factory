@@ -31,6 +31,7 @@
 - `SRC-006`: YouTube collector implemented (search + quota-aware handling + signal mapping)
 - `SRC-007`: ingestion runner implemented with retry/timeout policy and per-source error boundaries
 - `PRC-001`: signal normalizer implemented (text cleanup, UTC datetime normalization, engagement harmonization)
+- `PRC-002`: signal deduplicator implemented (URL/title/topic hash rules + duplicate reason stats)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -41,7 +42,7 @@
 
 ## Latest Commit
 
-- `d1470c2` - `feat: add signal normalizer for unified processing shape`
+- `c7f3d63` - `feat: add signal deduplicator with hash-based rules`
 
 ## Key Decisions
 
@@ -51,7 +52,7 @@
 
 ## Next Up
 
-- `PRC-002`: deduplicator (URL/title/topic hash rules)
+- `PRC-003`: clusterer (canonical topic creation)
 
 ## Open Risks
 
