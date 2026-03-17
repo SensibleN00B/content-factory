@@ -49,6 +49,7 @@
 - `QA-002`: collector contract tests + trend pipeline integration tests with fixture sources
 - `QA-003`: frontend integration flow test added for Settings -> Run -> Shortlist -> Label journey
 - `OBS-001`: structured JSON logging added with run metrics (`duration`, `source_failures`, `candidate_count`)
+- `DOC-002`: API reference and UI usage guide added for MVP operations
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -59,7 +60,7 @@
 
 ## Latest Commit
 
-- `8b47a07` - `feat: add structured logging and run metrics observability`
+- `b6a39c3` - `docs: add api and ui usage guide for mvp operations`
 
 ## Key Decisions
 
@@ -69,9 +70,10 @@
 
 ## Next Up
 
-- `QA-004`: manual quality protocol for 30-50 topics + tuning worksheet
+- `REL-001`: MVP release checklist and smoke script
 
 ## Open Risks
 
 - Collector API keys are not configured yet (`.env` values pending)
 - Browser-level Playwright e2e is not added yet (current QA-003 is integration test via Vitest)
+- Manual quality benchmark protocol (`QA-004`) is pending execution on real topic batches
