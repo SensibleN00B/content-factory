@@ -23,6 +23,7 @@ class AppSettings(BaseModel):
     producthunt_client_secret: str = Field(
         default_factory=lambda: os.getenv("PRODUCTHUNT_CLIENT_SECRET", "")
     )
+    youtube_api_key: str = Field(default_factory=lambda: os.getenv("YOUTUBE_API_KEY", ""))
 
 
 settings = AppSettings()

@@ -21,6 +21,13 @@ from app.infrastructure.sources.reddit import (
 from app.infrastructure.sources.reddit import (
     UrllibJsonTransport as RedditUrllibJsonTransport,
 )
+from app.infrastructure.sources.youtube import (
+    YouTubeApiClient,
+    YouTubeApiError,
+    YouTubeCredentials,
+    YouTubeQuotaExceededError,
+    YouTubeSourceConnector,
+)
 
 __all__ = [
     "GoogleTrendsApiClient",
@@ -36,4 +43,9 @@ __all__ = [
     "RedditCredentials",
     "RedditSourceConnector",
     "RedditUrllibJsonTransport",
+    "YouTubeApiClient",
+    "YouTubeApiError",
+    "YouTubeCredentials",
+    "YouTubeQuotaExceededError",
+    "YouTubeSourceConnector",
 ]

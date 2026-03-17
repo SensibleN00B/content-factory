@@ -20,6 +20,10 @@ def test_settings_exposes_producthunt_configuration_fields() -> None:
     assert settings.producthunt_client_secret is not None
 
 
+def test_settings_exposes_youtube_configuration_field() -> None:
+    assert settings.youtube_api_key is not None
+
+
 def test_build_engine_returns_sqlalchemy_engine() -> None:
     engine = build_engine("sqlite+pysqlite:///:memory:")
 
