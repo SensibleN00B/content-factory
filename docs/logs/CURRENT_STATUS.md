@@ -27,6 +27,7 @@
 - `SRC-002`: Reddit collector implemented (OAuth auth + query + signal mapping)
 - `SRC-003`: Hacker News collector implemented (query + signal mapping)
 - `SRC-004`: Google Trends collector implemented (region/language query + signal mapping + failure handling)
+- `SRC-005`: Product Hunt collector implemented (OAuth + GraphQL + signal mapping)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -37,7 +38,7 @@
 
 ## Latest Commit
 
-- `cd2200a` - `feat: add google trends collector with region query handling`
+- `8b1017d` - `feat: add producthunt collector with oauth graphql mapping`
 
 ## Key Decisions
 
@@ -47,7 +48,7 @@
 
 ## Next Up
 
-- `SRC-005`: Product Hunt collector
+- `SRC-006`: YouTube collector
 
 ## Open Risks
 
