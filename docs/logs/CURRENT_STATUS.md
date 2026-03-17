@@ -45,6 +45,7 @@
 - `FE-004`: shortlist page implemented (score, sources, why-now summary + label exclusions)
 - `FE-005`: topic details page implemented (evidence links, score breakdown, generated angles)
 - `FE-006`: shortlist label actions + `exclude_labels` chips implemented (including `Only new`)
+- `QA-001`: backend unit/integration tests expanded for critical curation and run-status flows
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -55,7 +56,7 @@
 
 ## Latest Commit
 
-- `998cd99` - `feat: add shortlist label actions and only-new filter chips`
+- `d6ab391` - `test: expand critical backend api coverage for curation flows`
 
 ## Key Decisions
 
@@ -65,7 +66,7 @@
 
 ## Next Up
 
-- `QA-001`: backend unit tests for domain/use-cases (critical flows)
+- `QA-002`: collector contract tests and pipeline integration tests
 
 ## Open Risks
 
