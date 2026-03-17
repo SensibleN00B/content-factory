@@ -2,17 +2,37 @@ from __future__ import annotations
 
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, HTTPException, Query, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.infrastructure.db.models import ContentCandidate, Label, TopicCluster, TopicLabelLink
 from app.infrastructure.db.session import get_db_session
-from app.presentation.http.schemas.candidate import CandidateOut
+from app.presentation.http.schemas.candidate import CandidateDetailOut, CandidateOut
 
 DbSession = Annotated[Session, Depends(get_db_session)]
 
 router = APIRouter(prefix="/api", tags=["candidates"])
+
+
+def _candidate_out(
+    *,
+    candidate: ContentCandidate,
+    topic_cluster: TopicCluster,
+    labels: list[str],
+) -> CandidateOut:
+    return CandidateOut(
+        id=candidate.id,
+        run_id=candidate.run_id,
+        topic_cluster_id=topic_cluster.id,
+        canonical_topic=topic_cluster.canonical_topic,
+        source_count=topic_cluster.source_count,
+        signal_count=topic_cluster.signal_count,
+        trend_score=round(candidate.trend_score, 2),
+        why_now=candidate.why_now,
+        labels=labels,
+        created_at=candidate.created_at,
+    )
 
 
 @router.get("/candidates", response_model=list[CandidateOut])
@@ -49,21 +69,38 @@ def get_candidates(
             continue
 
         result.append(
-            CandidateOut(
-                id=candidate.id,
-                run_id=candidate.run_id,
-                topic_cluster_id=topic_cluster.id,
-                canonical_topic=topic_cluster.canonical_topic,
-                source_count=topic_cluster.source_count,
-                signal_count=topic_cluster.signal_count,
-                trend_score=round(candidate.trend_score, 2),
-                why_now=candidate.why_now,
+            _candidate_out(
+                candidate=candidate,
+                topic_cluster=topic_cluster,
                 labels=labels,
-                created_at=candidate.created_at,
             )
         )
 
     return result
+
+
+@router.get("/candidates/{candidate_id}", response_model=CandidateDetailOut)
+def get_candidate_details(candidate_id: int, db_session: DbSession) -> CandidateDetailOut:
+    row = db_session.execute(
+        select(ContentCandidate, TopicCluster)
+        .join(TopicCluster, TopicCluster.id == ContentCandidate.topic_cluster_id)
+        .where(ContentCandidate.id == candidate_id)
+    ).first()
+    if row is None:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Candidate not found")
+
+    candidate, topic_cluster = row
+    labels_map = _load_topic_labels(db_session=db_session, topic_cluster_ids=[topic_cluster.id])
+    labels = labels_map.get(topic_cluster.id, [])
+    base = _candidate_out(candidate=candidate, topic_cluster=topic_cluster, labels=labels)
+
+    return CandidateDetailOut(
+        **base.model_dump(),
+        score_breakdown=candidate.score_breakdown_json or {},
+        evidence_urls=topic_cluster.evidence_urls_json or [],
+        angles=candidate.angles_json or [],
+        confidence=candidate.confidence,
+    )
 
 
 def _load_topic_labels(

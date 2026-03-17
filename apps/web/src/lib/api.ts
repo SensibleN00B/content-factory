@@ -53,6 +53,13 @@ export type CandidateResponse = {
   created_at: string;
 };
 
+export type CandidateDetailResponse = CandidateResponse & {
+  score_breakdown: Record<string, number>;
+  evidence_urls: string[];
+  angles: string[];
+  confidence: number | null;
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 export async function getHealthStatus(): Promise<HealthStatus> {
@@ -169,4 +176,19 @@ export async function getCandidates(params: {
   }
 
   return (await response.json()) as CandidateResponse[];
+}
+
+export async function getCandidateDetails(candidateId: number): Promise<CandidateDetailResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/candidates/${candidateId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Candidate details fetch failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as CandidateDetailResponse;
 }

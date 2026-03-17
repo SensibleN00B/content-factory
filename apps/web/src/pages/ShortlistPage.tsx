@@ -103,7 +103,11 @@ export function ShortlistPage() {
             <tbody>
               {items.map((item) => (
                 <tr key={item.id}>
-                  <td>{item.canonical_topic}</td>
+                  <td>
+                    <Link to={`/shortlist/${item.id}`} className="topic-link">
+                      {item.canonical_topic}
+                    </Link>
+                  </td>
                   <td>{item.trend_score}</td>
                   <td>
                     {item.source_count} sources / {item.signal_count} signals

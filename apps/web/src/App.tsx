@@ -4,6 +4,7 @@ import { HomePage } from "./pages/HomePage";
 import { RunConsolePage } from "./pages/RunConsolePage";
 import { ShortlistPage } from "./pages/ShortlistPage";
 import { SettingsPage } from "./pages/SettingsPage";
+import { TopicDetailsPage } from "./pages/TopicDetailsPage";
 
 export function App() {
   return (
@@ -11,6 +12,7 @@ export function App() {
       <Route path="/" element={<HomePage />} />
       <Route path="/runs" element={<RunConsolePage />} />
       <Route path="/shortlist" element={<ShortlistPage />} />
+      <Route path="/shortlist/:candidateId" element={<TopicDetailsPage />} />
       <Route path="/settings" element={<SettingsPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>

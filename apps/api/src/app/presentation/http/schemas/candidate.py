@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from datetime import datetime
+from typing import Any
 
 from pydantic import BaseModel
 
@@ -16,3 +17,10 @@ class CandidateOut(BaseModel):
     why_now: str | None
     labels: list[str]
     created_at: datetime
+
+
+class CandidateDetailOut(CandidateOut):
+    score_breakdown: dict[str, Any]
+    evidence_urls: list[str]
+    angles: list[str]
+    confidence: float | None
