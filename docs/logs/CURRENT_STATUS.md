@@ -15,7 +15,7 @@
 
 - `ARCH-001`: monorepo skeleton created (`apps/api`, `apps/web`, `packages/contracts`, `infra`)
 - `DEV-001`: baseline tooling and env templates
-- `OPS-001`: Docker Compose stack for `api + db + web` implemented and smoke-tested
+- `OPS-001`: Docker Compose stack for `api + db + web` implemented and smoke-tested`n- `DOC-001`: local setup and testing runbook created
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -36,10 +36,11 @@
 
 ## Next Up
 
-- `DOC-001`: development runbook (setup/run/test with compose workflow)
+- `BE-001`: FastAPI layered app skeleton and health router
 
 ## Open Risks
 
 - Collector API keys are not configured yet (`.env` values pending)
 - Frontend scaffold is still placeholder content (full FE scaffold planned in `FE-001`)
+
 

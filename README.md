@@ -43,3 +43,8 @@
 
 - `DOC-001`: local setup and testing runbook
 - `BE-001`: FastAPI layered skeleton
+
+## Runbook
+
+- Local setup and testing: docs/LOCAL_SETUP_AND_TESTING.md
+
