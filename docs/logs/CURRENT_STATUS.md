@@ -18,6 +18,7 @@
 - `OPS-001`: Docker Compose stack for `api + db + web` implemented and smoke-tested
 - `DOC-001`: local setup and testing runbook created
 - `BE-001`: FastAPI layered app skeleton + health router + passing health test
+- `BE-002`: SQLAlchemy session layer + Alembic wiring integrated and verified
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -28,7 +29,7 @@
 
 ## Latest Commit
 
-- `af142c7` - `docs: add local setup and testing runbook`
+- `0f7016e` - `feat: integrate sqlalchemy sessions and alembic config`
 
 ## Key Decisions
 
@@ -38,7 +39,7 @@
 
 ## Next Up
 
-- `BE-002`: SQLAlchemy + Alembic integration
+- `BE-003`: core schema and first migration (`profiles`, `runs`, `run_sources`, `raw_signals`, `topic_clusters`, `content_candidates`, `labels`, `topic_label_links`)
 
 ## Open Risks
 
