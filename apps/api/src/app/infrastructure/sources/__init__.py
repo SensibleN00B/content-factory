@@ -1,3 +1,7 @@
+from app.infrastructure.sources.google_trends import (
+    GoogleTrendsApiClient,
+    GoogleTrendsSourceConnector,
+)
 from app.infrastructure.sources.hackernews import (
     HackerNewsApiClient,
     HackerNewsSourceConnector,
@@ -13,6 +17,8 @@ from app.infrastructure.sources.reddit import (
 )
 
 __all__ = [
+    "GoogleTrendsApiClient",
+    "GoogleTrendsSourceConnector",
     "HackerNewsApiClient",
     "HackerNewsSourceConnector",
     "RedditApiClient",
