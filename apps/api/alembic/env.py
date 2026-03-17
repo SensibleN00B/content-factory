@@ -13,6 +13,7 @@ if str(SRC_DIR) not in sys.path:
     sys.path.insert(0, str(SRC_DIR))
 
 from app.core.config import settings
+from app.infrastructure.db import models  # noqa: F401
 from app.infrastructure.db.base import Base
 
 config = context.config
@@ -58,3 +59,4 @@ if context.is_offline_mode():
     run_migrations_offline()
 else:
     run_migrations_online()
+
