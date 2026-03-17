@@ -9,6 +9,12 @@ def test_settings_exposes_database_url() -> None:
     assert settings.database_url
 
 
+def test_settings_exposes_reddit_configuration_fields() -> None:
+    assert settings.reddit_client_id is not None
+    assert settings.reddit_client_secret is not None
+    assert settings.reddit_user_agent
+
+
 def test_build_engine_returns_sqlalchemy_engine() -> None:
     engine = build_engine("sqlite+pysqlite:///:memory:")
 

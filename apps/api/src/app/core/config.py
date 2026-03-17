@@ -12,6 +12,11 @@ class AppSettings(BaseModel):
             "sqlite+pysqlite:///./content_factory.db",
         )
     )
+    reddit_client_id: str = Field(default_factory=lambda: os.getenv("REDDIT_CLIENT_ID", ""))
+    reddit_client_secret: str = Field(default_factory=lambda: os.getenv("REDDIT_CLIENT_SECRET", ""))
+    reddit_user_agent: str = Field(
+        default_factory=lambda: os.getenv("REDDIT_USER_AGENT", "content-factory/0.1")
+    )
 
 
 settings = AppSettings()
