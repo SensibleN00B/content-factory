@@ -33,6 +33,7 @@
 - `PRC-001`: signal normalizer implemented (text cleanup, UTC datetime normalization, engagement harmonization)
 - `PRC-002`: signal deduplicator implemented (URL/title/topic hash rules + duplicate reason stats)
 - `PRC-003`: signal clusterer implemented (canonical topic grouping + deterministic cluster key)
+- `PRC-004`: relevance filter implemented (niche/ICP/region/language/include/exclude with reasons)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -43,7 +44,7 @@
 
 ## Latest Commit
 
-- `557fc73` - `feat: add topic clusterer for canonical topic grouping`
+- `268c235` - `feat: add signal relevance filter with auditable reasons`
 
 ## Key Decisions
 
@@ -53,7 +54,7 @@
 
 ## Next Up
 
-- `PRC-004`: relevance filter (niche/ICP/region/language/include/exclude)
+- `PRC-005`: scoring engine (velocity, volume, engagement, relevance, opinionability)
 
 ## Open Risks
 
