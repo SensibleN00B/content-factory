@@ -41,6 +41,7 @@
 - `CUR-003`: candidates API implemented with `exclude_labels` filtering
 - `FE-001`: React + TypeScript + Vite scaffold implemented with routing and API health client
 - `FE-002`: settings page implemented with profile form and `GET/PUT /api/profile` integration
+- `FE-003`: run console implemented (`POST /api/runs`, polling `GET /api/runs/{id}`, per-source status)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -51,7 +52,7 @@
 
 ## Latest Commit
 
-- `85da0f2` - `feat: add profile settings page with api integration`
+- `a4a4d5b` - `feat: add run console ui with source-level run status`
 
 ## Key Decisions
 
@@ -61,7 +62,7 @@
 
 ## Next Up
 
-- `FE-003`: run console page (manual run + per-source progress)
+- `FE-004`: shortlist page (score, sources, why-now summary)
 
 ## Open Risks
 
