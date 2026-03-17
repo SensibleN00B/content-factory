@@ -36,6 +36,7 @@
 - `PRC-004`: relevance filter implemented (niche/ICP/region/language/include/exclude with reasons)
 - `PRC-005`: scoring engine implemented (velocity/volume/engagement/relevance/opinionability, weighted)
 - `PRC-006`: explainability output implemented (`why_now`, evidence links, content angles)
+- `CUR-001`: seed label dictionary implemented and queryable via `GET /api/labels`
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -46,7 +47,7 @@
 
 ## Latest Commit
 
-- `270b6e1` - `feat: add topic explainability output with why-now and angles`
+- `4ced775` - `feat: seed default labels and expose labels query api`
 
 ## Key Decisions
 
@@ -56,7 +57,7 @@
 
 ## Next Up
 
-- `CUR-001`: seed label dictionary (`selected_for_post`, `published`, `not_relevant`, `duplicate`, `watchlist`)
+- `CUR-002`: label APIs (`POST /topics/{id}/labels`, `DELETE /topics/{id}/labels/{label}`)
 
 ## Open Risks
 
