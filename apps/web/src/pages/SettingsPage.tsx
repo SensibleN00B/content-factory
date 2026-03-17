@@ -161,9 +161,14 @@ export function SettingsPage() {
             <p className="eyebrow">Profile Settings</p>
             <h1>Discovery Inputs</h1>
           </div>
-          <Link to="/" className="ghost-link">
-            Back to dashboard
-          </Link>
+          <div className="panel-links">
+            <Link to="/" className="ghost-link">
+              Dashboard
+            </Link>
+            <Link to="/runs" className="ghost-link">
+              Run console
+            </Link>
+          </div>
         </div>
 
         <form className="settings-form" onSubmit={onSubmit}>

@@ -46,9 +46,14 @@ export function HomePage() {
               Frontend scaffold is live. Next steps: run console and shortlist views.
             </p>
           </div>
-          <Link to="/settings" className="ghost-link">
-            Open settings
-          </Link>
+          <div className="panel-links">
+            <Link to="/settings" className="ghost-link">
+              Settings
+            </Link>
+            <Link to="/runs" className="ghost-link">
+              Run console
+            </Link>
+          </div>
         </div>
         <div className="health-card">
           <h2>API Health</h2>

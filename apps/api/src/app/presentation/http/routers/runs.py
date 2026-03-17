@@ -6,13 +6,14 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.infrastructure.db.models import Profile, Run
+from app.infrastructure.db.models import Profile, Run, RunSource
 from app.infrastructure.db.session import get_db_session
-from app.presentation.http.schemas.run import RunOut
+from app.presentation.http.schemas.run import RunOut, RunSourceOut
 
 DbSession = Annotated[Session, Depends(get_db_session)]
 
 router = APIRouter(prefix="/api", tags=["runs"])
+MVP_SOURCE_KEYS = ["google_trends", "reddit", "hackernews", "producthunt", "youtube"]
 
 
 def _profile_snapshot(profile: Profile) -> dict[str, Any]:
@@ -27,7 +28,7 @@ def _profile_snapshot(profile: Profile) -> dict[str, Any]:
     }
 
 
-def _to_run_out(run: Run) -> RunOut:
+def _to_run_out(run: Run, *, sources: list[RunSource]) -> RunOut:
     return RunOut(
         id=run.id,
         profile_id=run.profile_id,
@@ -37,6 +38,25 @@ def _to_run_out(run: Run) -> RunOut:
         input_snapshot=run.input_snapshot_json,
         error_summary=run.error_summary,
         created_at=run.created_at,
+        sources=[
+            RunSourceOut(
+                source=source.source,
+                status=source.status,
+                fetched_count=source.fetched_count,
+                error_text=source.error_text,
+                duration_ms=source.duration_ms,
+                created_at=source.created_at,
+            )
+            for source in sources
+        ],
+    )
+
+
+def _fetch_run_sources(db_session: Session, *, run_id: int) -> list[RunSource]:
+    return list(
+        db_session.scalars(
+            select(RunSource).where(RunSource.run_id == run_id).order_by(RunSource.source.asc())
+        )
     )
 
 
@@ -57,8 +77,21 @@ def create_run(db_session: DbSession) -> RunOut:
     db_session.add(run)
     db_session.commit()
     db_session.refresh(run)
+    for source_key in MVP_SOURCE_KEYS:
+        db_session.add(
+            RunSource(
+                run_id=run.id,
+                source=source_key,
+                status="pending",
+                fetched_count=0,
+                error_text=None,
+                duration_ms=None,
+            )
+        )
+    db_session.commit()
+    run_sources = _fetch_run_sources(db_session, run_id=run.id)
 
-    return _to_run_out(run)
+    return _to_run_out(run, sources=run_sources)
 
 
 @router.get("/runs/{run_id}", response_model=RunOut)
@@ -70,4 +103,5 @@ def get_run(run_id: int, db_session: DbSession) -> RunOut:
             detail="Run not found",
         )
 
-    return _to_run_out(run)
+    run_sources = _fetch_run_sources(db_session, run_id=run_id)
+    return _to_run_out(run, sources=run_sources)

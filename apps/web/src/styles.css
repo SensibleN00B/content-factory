@@ -54,6 +54,13 @@ body {
   gap: 14px;
 }
 
+.panel-links {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .eyebrow {
   margin: 0 0 8px;
   font-size: 13px;
@@ -188,9 +195,78 @@ h1 {
   cursor: pointer;
 }
 
+.settings-actions .secondary-btn {
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.68);
+}
+
 .settings-actions button[disabled] {
   opacity: 0.65;
   cursor: not-allowed;
+}
+
+.run-console {
+  margin-top: 16px;
+  display: grid;
+  gap: 14px;
+}
+
+.run-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 14px;
+  font-size: 14px;
+}
+
+.run-summary p {
+  margin: 0;
+}
+
+.source-table-wrap {
+  overflow-x: auto;
+}
+
+.source-table {
+  width: 100%;
+  border-collapse: collapse;
+  min-width: 640px;
+}
+
+.source-table th,
+.source-table td {
+  text-align: left;
+  border-bottom: 1px solid var(--border);
+  padding: 10px 8px;
+  font-size: 14px;
+}
+
+.status-chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 12px;
+  border: 1px solid var(--border);
+  background: rgba(255, 255, 255, 0.68);
+}
+
+.status-pending,
+.status-collecting,
+.status-processing,
+.status-scoring {
+  color: #6b4f00;
+}
+
+.status-completed,
+.status-success {
+  color: var(--ok);
+}
+
+.status-failed,
+.status-error,
+.status-timeout {
+  color: var(--error);
 }
 
 @media (max-width: 720px) {
@@ -201,6 +277,10 @@ h1 {
   .panel-head {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .panel-links {
+    width: 100%;
   }
 }
 

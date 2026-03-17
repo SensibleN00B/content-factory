@@ -19,6 +19,27 @@ export type ProfileResponse = ProfilePayload & {
   created_at: string;
 };
 
+export type RunSource = {
+  source: string;
+  status: string;
+  fetched_count: number;
+  error_text: string | null;
+  duration_ms: number | null;
+  created_at: string;
+};
+
+export type RunResponse = {
+  id: number;
+  profile_id: number;
+  status: string;
+  started_at: string | null;
+  finished_at: string | null;
+  input_snapshot: Record<string, unknown> | null;
+  error_summary: string | null;
+  created_at: string;
+  sources: RunSource[];
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 export async function getHealthStatus(): Promise<HealthStatus> {
@@ -72,4 +93,34 @@ export async function saveProfile(payload: ProfilePayload): Promise<ProfileRespo
   }
 
   return (await response.json()) as ProfileResponse;
+}
+
+export async function createRun(): Promise<RunResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/runs`, {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Run creation failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as RunResponse;
+}
+
+export async function getRun(runId: number): Promise<RunResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/runs/${runId}`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Run fetch failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as RunResponse;
 }
