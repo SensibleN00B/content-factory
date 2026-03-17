@@ -24,6 +24,7 @@
 - `BE-005`: run state machine with strict transition validation and terminal-state guards
 - `BE-006`: run APIs implemented (`POST /api/runs`, `GET /api/runs/{id}`)
 - `SRC-001`: source adapter contract (`SourceConnector`) + source registry
+- `SRC-002`: Reddit collector implemented (OAuth auth + query + signal mapping)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -34,7 +35,7 @@
 
 ## Latest Commit
 
-- `3483d29` - `feat: add source connector contract and registry`
+- `80f8b9e` - `feat: add reddit collector with oauth search mapping`
 
 ## Key Decisions
 
@@ -44,7 +45,7 @@
 
 ## Next Up
 
-- `SRC-002`: Reddit collector (auth + query + mapping to RawSignal)
+- `SRC-003`: Hacker News collector
 
 ## Open Risks
 
