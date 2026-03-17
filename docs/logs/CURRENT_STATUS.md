@@ -25,6 +25,7 @@
 - `BE-006`: run APIs implemented (`POST /api/runs`, `GET /api/runs/{id}`)
 - `SRC-001`: source adapter contract (`SourceConnector`) + source registry
 - `SRC-002`: Reddit collector implemented (OAuth auth + query + signal mapping)
+- `SRC-003`: Hacker News collector implemented (query + signal mapping)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -35,7 +36,7 @@
 
 ## Latest Commit
 
-- `80f8b9e` - `feat: add reddit collector with oauth search mapping`
+- `0194be9` - `feat: add hackernews collector and api client`
 
 ## Key Decisions
 
@@ -45,7 +46,7 @@
 
 ## Next Up
 
-- `SRC-003`: Hacker News collector
+- `SRC-004`: Google Trends collector
 
 ## Open Risks
 
