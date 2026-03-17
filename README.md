@@ -46,4 +46,5 @@
 - Local setup and testing: docs/LOCAL_SETUP_AND_TESTING.md
 - API and UI usage guide: docs/API_UI_USAGE_GUIDE.md
 - Release checklist: docs/RELEASE_CHECKLIST.md
+- Post-release feedback loop: docs/POST_RELEASE_FEEDBACK_LOOP.md
 
