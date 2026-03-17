@@ -50,6 +50,8 @@
 - `QA-003`: frontend integration flow test added for Settings -> Run -> Shortlist -> Label journey
 - `OBS-001`: structured JSON logging added with run metrics (`duration`, `source_failures`, `candidate_count`)
 - `DOC-002`: API reference and UI usage guide added for MVP operations
+- `REL-001`: MVP release checklist and one-command smoke script added (`scripts/smoke.ps1`)
+- `REL-002`: post-release feedback loop checklist documented
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -60,7 +62,7 @@
 
 ## Latest Commit
 
-- `b6a39c3` - `docs: add api and ui usage guide for mvp operations`
+- `3bc5128` - `docs: add post-release feedback loop checklist`
 
 ## Key Decisions
 
@@ -70,7 +72,7 @@
 
 ## Next Up
 
-- `REL-001`: MVP release checklist and smoke script
+- `QA-004`: manual quality protocol for 30-50 topics + tuning worksheet
 
 ## Open Risks
 
