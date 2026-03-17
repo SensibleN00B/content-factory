@@ -23,6 +23,7 @@
 - Lint: `pwsh ./scripts/lint.ps1`
 - Format: `pwsh ./scripts/format.ps1`
 - Test: `pwsh ./scripts/test.ps1`
+- Smoke (pre-release): `pwsh ./scripts/smoke.ps1`
 
 ## Docker Compose (OPS-001)
 
@@ -44,4 +45,5 @@
 
 - Local setup and testing: docs/LOCAL_SETUP_AND_TESTING.md
 - API and UI usage guide: docs/API_UI_USAGE_GUIDE.md
+- Release checklist: docs/RELEASE_CHECKLIST.md
 
