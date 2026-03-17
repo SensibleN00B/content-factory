@@ -48,6 +48,7 @@
 - `QA-001`: backend unit/integration tests expanded for critical curation and run-status flows
 - `QA-002`: collector contract tests + trend pipeline integration tests with fixture sources
 - `QA-003`: frontend integration flow test added for Settings -> Run -> Shortlist -> Label journey
+- `OBS-001`: structured JSON logging added with run metrics (`duration`, `source_failures`, `candidate_count`)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -58,7 +59,7 @@
 
 ## Latest Commit
 
-- `bcabc42` - `test: add frontend integration flow coverage for core ui journey`
+- `8b47a07` - `feat: add structured logging and run metrics observability`
 
 ## Key Decisions
 
@@ -68,7 +69,7 @@
 
 ## Next Up
 
-- `OBS-001`: structured logging and run metrics (`duration`, `source_failures`, `candidate_count`)
+- `QA-004`: manual quality protocol for 30-50 topics + tuning worksheet
 
 ## Open Risks
 
