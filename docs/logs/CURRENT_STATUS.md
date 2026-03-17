@@ -30,6 +30,7 @@
 - `SRC-005`: Product Hunt collector implemented (OAuth + GraphQL + signal mapping)
 - `SRC-006`: YouTube collector implemented (search + quota-aware handling + signal mapping)
 - `SRC-007`: ingestion runner implemented with retry/timeout policy and per-source error boundaries
+- `PRC-001`: signal normalizer implemented (text cleanup, UTC datetime normalization, engagement harmonization)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -40,7 +41,7 @@
 
 ## Latest Commit
 
-- `e6b2d26` - `feat: add ingestion runner with retry timeout boundaries`
+- `d1470c2` - `feat: add signal normalizer for unified processing shape`
 
 ## Key Decisions
 
@@ -50,7 +51,7 @@
 
 ## Next Up
 
-- `PRC-001`: normalizer (text cleanup, datetime, engagement harmonization)
+- `PRC-002`: deduplicator (URL/title/topic hash rules)
 
 ## Open Risks
 
