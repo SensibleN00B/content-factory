@@ -26,7 +26,7 @@
 
 ## Latest Commit
 
-- `4c812de` - `chore: bootstrap monorepo and standardize Python tooling on uv`
+- `2ffb906` - `ops: add docker compose stack for api db and web`
 
 ## Key Decisions
 
@@ -42,3 +42,4 @@
 
 - Collector API keys are not configured yet (`.env` values pending)
 - Frontend scaffold is still placeholder content (full FE scaffold planned in `FE-001`)
+
