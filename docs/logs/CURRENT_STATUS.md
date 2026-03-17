@@ -35,6 +35,7 @@
 - `PRC-003`: signal clusterer implemented (canonical topic grouping + deterministic cluster key)
 - `PRC-004`: relevance filter implemented (niche/ICP/region/language/include/exclude with reasons)
 - `PRC-005`: scoring engine implemented (velocity/volume/engagement/relevance/opinionability, weighted)
+- `PRC-006`: explainability output implemented (`why_now`, evidence links, content angles)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -45,7 +46,7 @@
 
 ## Latest Commit
 
-- `121e35f` - `feat: add topic scorer with configurable weighted components`
+- `270b6e1` - `feat: add topic explainability output with why-now and angles`
 
 ## Key Decisions
 
@@ -55,7 +56,7 @@
 
 ## Next Up
 
-- `PRC-006`: explainability output (`why_now`, evidence links, angles)
+- `CUR-001`: seed label dictionary (`selected_for_post`, `published`, `not_relevant`, `duplicate`, `watchlist`)
 
 ## Open Risks
 
