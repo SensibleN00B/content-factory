@@ -44,6 +44,7 @@
 - `FE-003`: run console implemented (`POST /api/runs`, polling `GET /api/runs/{id}`, per-source status)
 - `FE-004`: shortlist page implemented (score, sources, why-now summary + label exclusions)
 - `FE-005`: topic details page implemented (evidence links, score breakdown, generated angles)
+- `FE-006`: shortlist label actions + `exclude_labels` chips implemented (including `Only new`)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -54,7 +55,7 @@
 
 ## Latest Commit
 
-- `cf0ed26` - `feat: add topic details view with candidate evidence and angles`
+- `998cd99` - `feat: add shortlist label actions and only-new filter chips`
 
 ## Key Decisions
 
@@ -64,7 +65,7 @@
 
 ## Next Up
 
-- `FE-006`: label actions + `exclude_labels` UI chips (including `Only new`)
+- `QA-001`: backend unit tests for domain/use-cases (critical flows)
 
 ## Open Risks
 
