@@ -40,6 +40,7 @@
 - `CUR-002`: topic label APIs implemented (`POST /api/topics/{id}/labels`, `DELETE /api/topics/{id}/labels/{label}`)
 - `CUR-003`: candidates API implemented with `exclude_labels` filtering
 - `FE-001`: React + TypeScript + Vite scaffold implemented with routing and API health client
+- `FE-002`: settings page implemented with profile form and `GET/PUT /api/profile` integration
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -50,7 +51,7 @@
 
 ## Latest Commit
 
-- `c1dc594` - `feat: scaffold web app with vite react routing and health client`
+- `85da0f2` - `feat: add profile settings page with api integration`
 
 ## Key Decisions
 
@@ -60,7 +61,7 @@
 
 ## Next Up
 
-- `FE-002`: settings page for profile input
+- `FE-003`: run console page (manual run + per-source progress)
 
 ## Open Risks
 
