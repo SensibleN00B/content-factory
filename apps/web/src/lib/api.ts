@@ -60,6 +60,12 @@ export type CandidateDetailResponse = CandidateResponse & {
   confidence: number | null;
 };
 
+export type TopicLabelResponse = {
+  topic_cluster_id: number;
+  label: string;
+  created_at: string;
+};
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
 
 export async function getHealthStatus(): Promise<HealthStatus> {
@@ -191,4 +197,37 @@ export async function getCandidateDetails(candidateId: number): Promise<Candidat
   }
 
   return (await response.json()) as CandidateDetailResponse;
+}
+
+export async function addTopicLabel(
+  topicClusterId: number,
+  label: string,
+): Promise<TopicLabelResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/topics/${topicClusterId}/labels`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+    },
+    body: JSON.stringify({ label }),
+  });
+
+  if (!response.ok) {
+    throw new Error(`Add label failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as TopicLabelResponse;
+}
+
+export async function removeTopicLabel(topicClusterId: number, label: string): Promise<void> {
+  const response = await fetch(`${API_BASE_URL}/api/topics/${topicClusterId}/labels/${label}`, {
+    method: "DELETE",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Remove label failed: HTTP ${response.status}`);
+  }
 }
