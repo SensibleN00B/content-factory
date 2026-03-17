@@ -1,10 +1,12 @@
 from fastapi import FastAPI
 
 from app.core.config import settings
+from app.core.observability import configure_logging
 from app.presentation.http.api import api_router
 
 
 def create_app() -> FastAPI:
+    configure_logging(level=settings.log_level, use_json=settings.log_json)
     app = FastAPI(title=settings.app_name, version=settings.app_version)
     app.include_router(api_router)
     return app

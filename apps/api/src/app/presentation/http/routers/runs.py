@@ -1,12 +1,14 @@
 from __future__ import annotations
 
+import logging
 from typing import Annotated, Any
 
 from fastapi import APIRouter, Depends, HTTPException, status
-from sqlalchemy import select
+from sqlalchemy import func, select
 from sqlalchemy.orm import Session
 
-from app.infrastructure.db.models import Profile, Run, RunSource
+from app.core.observability import log_event
+from app.infrastructure.db.models import ContentCandidate, Profile, Run, RunSource
 from app.infrastructure.db.session import get_db_session
 from app.presentation.http.schemas.run import RunOut, RunSourceOut
 
@@ -14,6 +16,7 @@ DbSession = Annotated[Session, Depends(get_db_session)]
 
 router = APIRouter(prefix="/api", tags=["runs"])
 MVP_SOURCE_KEYS = ["google_trends", "reddit", "hackernews", "producthunt", "youtube"]
+logger = logging.getLogger(__name__)
 
 
 def _profile_snapshot(profile: Profile) -> dict[str, Any]:
@@ -91,6 +94,16 @@ def create_run(db_session: DbSession) -> RunOut:
     db_session.commit()
     run_sources = _fetch_run_sources(db_session, run_id=run.id)
 
+    log_event(
+        logger,
+        logging.INFO,
+        "run.created",
+        run_id=run.id,
+        profile_id=run.profile_id,
+        status=run.status,
+        source_count=len(run_sources),
+    )
+
     return _to_run_out(run, sources=run_sources)
 
 
@@ -104,4 +117,28 @@ def get_run(run_id: int, db_session: DbSession) -> RunOut:
         )
 
     run_sources = _fetch_run_sources(db_session, run_id=run_id)
+    candidate_count = (
+        db_session.scalar(
+            select(func.count(ContentCandidate.id)).where(ContentCandidate.run_id == run_id)
+        )
+        or 0
+    )
+    source_failures = sum(
+        1 for source in run_sources if source.status.lower() in {"failed", "timeout"}
+    )
+    run_duration_ms: int | None = None
+    if run.started_at is not None and run.finished_at is not None:
+        run_duration_ms = max(0, int((run.finished_at - run.started_at).total_seconds() * 1000))
+
+    log_event(
+        logger,
+        logging.INFO,
+        "run.fetched",
+        run_id=run.id,
+        status=run.status,
+        source_failures=source_failures,
+        candidate_count=int(candidate_count),
+        duration_ms=run_duration_ms,
+    )
+
     return _to_run_out(run, sources=run_sources)

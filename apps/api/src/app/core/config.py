@@ -6,6 +6,10 @@ from pydantic import BaseModel, Field
 class AppSettings(BaseModel):
     app_name: str = "Content Factory API"
     app_version: str = "0.1.0"
+    log_level: str = Field(default_factory=lambda: os.getenv("LOG_LEVEL", "INFO"))
+    log_json: bool = Field(
+        default_factory=lambda: os.getenv("LOG_JSON", "true").lower() not in {"0", "false", "no"}
+    )
     database_url: str = Field(
         default_factory=lambda: os.getenv(
             "DATABASE_URL",

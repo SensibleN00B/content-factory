@@ -1,3 +1,4 @@
+import logging
 from collections.abc import Generator
 
 from fastapi.testclient import TestClient
@@ -56,6 +57,14 @@ def seed_profile(db_session: Session) -> Profile:
     return profile
 
 
+def _find_event_record(caplog: object, event_name: str) -> object | None:
+    records = getattr(caplog, "records", [])
+    for record in records:
+        if getattr(record, "event", None) == event_name:
+            return record
+    return None
+
+
 def test_post_runs_returns_404_when_profile_is_missing() -> None:
     client, _ = make_client()
 
@@ -111,6 +120,42 @@ def test_get_run_by_id_returns_run_status() -> None:
         "reddit",
         "youtube",
     ]
+
+
+def test_post_runs_emits_structured_log_record(caplog: object) -> None:
+    caplog.set_level(logging.INFO)
+    client, session_factory = make_client()
+    with session_factory() as db_session:
+        profile = seed_profile(db_session)
+
+    response = client.post("/api/runs")
+
+    assert response.status_code == 201
+    body = response.json()
+    event_record = _find_event_record(caplog, "run.created")
+    assert event_record is not None
+    assert getattr(event_record, "run_id", None) == body["id"]
+    assert getattr(event_record, "profile_id", None) == profile.id
+    assert getattr(event_record, "source_count", None) == 5
+
+
+def test_get_run_emits_structured_log_record(caplog: object) -> None:
+    caplog.set_level(logging.INFO)
+    client, session_factory = make_client()
+    with session_factory() as db_session:
+        seed_profile(db_session)
+
+    created = client.post("/api/runs")
+    run_id = created.json()["id"]
+    fetched = client.get(f"/api/runs/{run_id}")
+
+    assert fetched.status_code == 200
+    event_record = _find_event_record(caplog, "run.fetched")
+    assert event_record is not None
+    assert getattr(event_record, "run_id", None) == run_id
+    assert getattr(event_record, "status", None) == "pending"
+    assert getattr(event_record, "source_failures", None) == 0
+    assert getattr(event_record, "candidate_count", None) == 0
 
 
 def test_get_run_by_id_returns_404_when_not_found() -> None:

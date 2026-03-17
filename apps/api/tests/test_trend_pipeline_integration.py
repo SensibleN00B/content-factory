@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import UTC, datetime, timedelta
 
 from app.domain.ingestion.connectors import SourceCollectedSignal, SourceCollectRequest
@@ -177,3 +178,71 @@ def test_trend_pipeline_keeps_working_when_one_source_fails() -> None:
     assert result.run_summary.results["broken"].status == "failed"
     assert result.run_summary.results["reddit"].status == "success"
     assert len(result.explained_candidates) == 1
+
+
+def test_trend_pipeline_emits_completion_metrics(caplog: object) -> None:
+    caplog.set_level(logging.INFO)
+
+    class BrokenConnector:
+        source_key = "broken"
+
+        def collect(self, request: SourceCollectRequest) -> list[SourceCollectedSignal]:
+            raise RuntimeError("boom")
+
+    class HealthyConnector:
+        source_key = "reddit"
+
+        def collect(self, request: SourceCollectRequest) -> list[SourceCollectedSignal]:
+            return [
+                make_signal(
+                    source="reddit",
+                    signal_id="r1",
+                    title="AI workflow for clinics",
+                    url="https://example.com/r1",
+                    hours_ago=1,
+                    engagement_total=100,
+                ),
+            ]
+
+    registry = SourceRegistry(connectors=[BrokenConnector(), HealthyConnector()])
+    runner = IngestionRunner(
+        registry=registry,
+        policy=SourceExecutionPolicy(timeout_seconds=0.2, max_retries=0),
+    )
+    pipeline = TrendPipeline(
+        runner=runner,
+        normalizer=SignalNormalizer(),
+        relevance_filter=SignalRelevanceFilter(),
+        scorer=TopicScorer(),
+        explainer=TopicExplainer(),
+    )
+
+    result = pipeline.run(
+        request=make_request(),
+        sources=["broken", "reddit"],
+        relevance_config=RelevanceFilterConfig(
+            niche_terms=["ai"],
+            icp_terms=["founder"],
+            allowed_regions=["US"],
+            language="en",
+            include_keywords=["clinic"],
+            exclude_keywords=[],
+        ),
+        scoring_config=ScoringConfig(relevance_terms=["ai", "clinic"]),
+        explainability_config=ExplainabilityConfig(),
+    )
+
+    assert result.metrics.duration_ms >= 0
+    assert result.metrics.source_failures == 1
+    assert result.metrics.candidate_count == len(result.explained_candidates)
+
+    completion_record = None
+    for record in caplog.records:
+        if getattr(record, "event", None) == "trend_pipeline.completed":
+            completion_record = record
+            break
+
+    assert completion_record is not None
+    assert getattr(completion_record, "source_failures", None) == 1
+    assert getattr(completion_record, "candidate_count", None) == len(result.explained_candidates)
+    assert getattr(completion_record, "duration_ms", None) is not None
