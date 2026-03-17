@@ -42,6 +42,7 @@
 - `FE-001`: React + TypeScript + Vite scaffold implemented with routing and API health client
 - `FE-002`: settings page implemented with profile form and `GET/PUT /api/profile` integration
 - `FE-003`: run console implemented (`POST /api/runs`, polling `GET /api/runs/{id}`, per-source status)
+- `FE-004`: shortlist page implemented (score, sources, why-now summary + label exclusions)
 - Python workflow standardized on `uv`
 
 ## Timeline Logs
@@ -52,7 +53,7 @@
 
 ## Latest Commit
 
-- `a4a4d5b` - `feat: add run console ui with source-level run status`
+- `9e36bad` - `feat: add shortlist page and enrich candidates source metrics`
 
 ## Key Decisions
 
@@ -62,7 +63,7 @@
 
 ## Next Up
 
-- `FE-004`: shortlist page (score, sources, why-now summary)
+- `FE-005`: topic details page (evidence links + angles)
 
 ## Open Risks
 
