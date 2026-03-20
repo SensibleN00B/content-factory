@@ -258,14 +258,33 @@ h3 {
 .topic-feed li {
   border-top: 1px solid var(--border);
   padding-top: 10px;
-  display: flex;
-  justify-content: space-between;
-  gap: 12px;
 }
 
 .topic-feed li:first-child {
   border-top: none;
   padding-top: 0;
+}
+
+.topic-feed-link {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  color: inherit;
+  text-decoration: none;
+}
+
+.topic-feed-link strong {
+  transition: text-decoration-color 120ms ease;
+}
+
+.topic-feed-link:hover strong {
+  text-decoration: underline;
+}
+
+.topic-feed-link:focus-visible {
+  outline: 2px solid rgba(15, 118, 110, 0.35);
+  outline-offset: 2px;
+  border-radius: 8px;
 }
 
 .topic-feed p {

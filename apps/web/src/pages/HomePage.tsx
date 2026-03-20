@@ -186,14 +186,16 @@ export function HomePage() {
             <ul className="topic-feed">
               {recentTopics.slice(0, 6).map((topic) => (
                 <li key={topic.candidate_id}>
-                  <div>
-                    <strong>{topic.canonical_topic}</strong>
-                    <p>{topic.why_now ?? "No why-now summary yet."}</p>
-                  </div>
-                  <div className="topic-feed-meta">
-                    <StatusBadge value={topic.movement} />
-                    <span>{topic.trend_score.toFixed(1)}</span>
-                  </div>
+                  <Link to={`/shortlist/${topic.candidate_id}`} className="topic-feed-link">
+                    <div>
+                      <strong>{topic.canonical_topic}</strong>
+                      <p>{topic.why_now ?? "No why-now summary yet."}</p>
+                    </div>
+                    <div className="topic-feed-meta">
+                      <StatusBadge value={topic.movement} />
+                      <span>{topic.trend_score.toFixed(1)}</span>
+                    </div>
+                  </Link>
                 </li>
               ))}
             </ul>

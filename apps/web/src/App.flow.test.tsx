@@ -276,6 +276,10 @@ describe("App integration flow", () => {
     expect(screen.getByText("AI Briefing")).toBeInTheDocument();
     expect(screen.getByText("Pipeline Funnel")).toBeInTheDocument();
     expect(screen.getByText("Duplicate Url: 5")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /AI workflow for clinics/i })).toHaveAttribute(
+      "href",
+      "/shortlist/11",
+    );
   });
 
   it("renders grouped settings sections", async () => {
