@@ -23,10 +23,14 @@ services:
       context: ../apps/api
       dockerfile: Dockerfile
     container_name: content-factory-api
+    env_file:
+      - ../.env
     environment:
       APP_ENV: ${APP_ENV:-development}
       LOG_LEVEL: ${LOG_LEVEL:-INFO}
-      DATABASE_URL: ${DATABASE_URL:-postgresql+psycopg://content_factory:content_factory_dev@db:5432/content_factory}
+      LOG_JSON: ${LOG_JSON:-true}
+      DATABASE_URL: ${API_DATABASE_URL:-postgresql+psycopg://content_factory:content_factory_dev@db:5432/content_factory}
+      REDDIT_USER_AGENT: ${REDDIT_USER_AGENT:-content-factory/0.1}
     ports:
       - "${API_PORT:-8000}:8000"
     depends_on:
