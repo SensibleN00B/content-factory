@@ -24,6 +24,44 @@ type BriefingState =
   | { status: "ready"; payload: DashboardBriefingResponse }
   | { status: "error"; message: string };
 
+type CachedPayload<T> = {
+  payload: T;
+};
+
+const DASHBOARD_HEALTH_CACHE_KEY = "dashboard.health.v1";
+const DASHBOARD_BRIEFING_CACHE_KEY = "dashboard.briefing.v1";
+
+function readCachedPayload<T>(key: string): T | null {
+  if (typeof window === "undefined" || typeof window.sessionStorage === "undefined") {
+    return null;
+  }
+  try {
+    const raw = window.sessionStorage.getItem(key);
+    if (raw === null) {
+      return null;
+    }
+    const parsed = JSON.parse(raw) as CachedPayload<T>;
+    if (typeof parsed !== "object" || parsed === null || !("payload" in parsed)) {
+      return null;
+    }
+    return parsed.payload;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedPayload<T>(key: string, payload: T): void {
+  if (typeof window === "undefined" || typeof window.sessionStorage === "undefined") {
+    return;
+  }
+  try {
+    const cacheValue: CachedPayload<T> = { payload };
+    window.sessionStorage.setItem(key, JSON.stringify(cacheValue));
+  } catch {
+    // ignore cache write failures (quota/private mode)
+  }
+}
+
 function formatDateTime(value: string): string {
   const date = new Date(value);
   if (Number.isNaN(date.getTime())) {
@@ -45,8 +83,22 @@ function formatDropReason(value: string): string {
 }
 
 export function HomePage() {
-  const [healthState, setHealthState] = useState<HealthState>({ status: "loading" });
-  const [briefingState, setBriefingState] = useState<BriefingState>({ status: "loading" });
+  const [healthState, setHealthState] = useState<HealthState>(() => {
+    const cachedHealth = readCachedPayload<HealthStatus>(DASHBOARD_HEALTH_CACHE_KEY);
+    if (cachedHealth !== null) {
+      return { status: "ready", payload: cachedHealth };
+    }
+    return { status: "loading" };
+  });
+  const [briefingState, setBriefingState] = useState<BriefingState>(() => {
+    const cachedBriefing = readCachedPayload<DashboardBriefingResponse>(
+      DASHBOARD_BRIEFING_CACHE_KEY,
+    );
+    if (cachedBriefing !== null) {
+      return { status: "ready", payload: cachedBriefing };
+    }
+    return { status: "loading" };
+  });
 
   useEffect(() => {
     let active = true;
@@ -56,6 +108,7 @@ export function HomePage() {
         if (!active) {
           return;
         }
+        writeCachedPayload(DASHBOARD_HEALTH_CACHE_KEY, payload);
         setHealthState({ status: "ready", payload });
       })
       .catch((error: unknown) => {
@@ -64,7 +117,9 @@ export function HomePage() {
         }
         const message =
           error instanceof Error ? error.message : "Unexpected error while loading health status";
-        setHealthState({ status: "error", message });
+        setHealthState((current) =>
+          current.status === "ready" ? current : { status: "error", message },
+        );
       });
 
     getDashboardBriefing()
@@ -72,6 +127,7 @@ export function HomePage() {
         if (!active) {
           return;
         }
+        writeCachedPayload(DASHBOARD_BRIEFING_CACHE_KEY, payload);
         setBriefingState({ status: "ready", payload });
       })
       .catch((error: unknown) => {
@@ -82,7 +138,9 @@ export function HomePage() {
           error instanceof Error
             ? error.message
             : "Unexpected error while loading dashboard briefing";
-        setBriefingState({ status: "error", message });
+        setBriefingState((current) =>
+          current.status === "ready" ? current : { status: "error", message },
+        );
       });
 
     return () => {

@@ -327,4 +327,76 @@ describe("App integration flow", () => {
     await screen.findByText("AI assessment is currently unavailable.");
     expect(screen.getByTestId("ai-briefing-panel")).toHaveClass("briefing-panel-blurred");
   });
+
+  it("renders cached dashboard data immediately while refetch is pending", async () => {
+    window.sessionStorage.setItem(
+      "dashboard.health.v1",
+      JSON.stringify({
+        payload: { service: "api", status: "ok", version: "0.1.0" },
+      }),
+    );
+    window.sessionStorage.setItem(
+      "dashboard.briefing.v1",
+      JSON.stringify({
+        payload: {
+          generated_at: "2026-03-20T12:00:00Z",
+          briefing_available: true,
+          briefing_unavailable_reason: null,
+          briefing_items: [
+            {
+              kind: "rising",
+              title: "Cached briefing title",
+              detail: "Cached briefing detail.",
+            },
+          ],
+          recent_topics: [
+            {
+              candidate_id: 11,
+              run_id: 1,
+              canonical_topic: "Cached recent topic",
+              trend_score: 80.1,
+              movement: "rising",
+              why_now: "Cached why now.",
+              source_count: 2,
+              signal_count: 3,
+              labels: [],
+              created_at: "2026-03-20T12:00:00Z",
+            },
+          ],
+          latest_run: {
+            id: 1,
+            status: "completed",
+            created_at: "2026-03-20T12:00:00Z",
+            candidate_count: 1,
+          },
+          pipeline_metrics: {
+            stages: [],
+            drop_reasons: {},
+          },
+          source_health: {
+            total_sources: 5,
+            healthy_sources: 5,
+            failed_sources: 0,
+          },
+        },
+      }),
+    );
+
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => {
+        return await new Promise<Response>(() => {});
+      }),
+    );
+
+    render(
+      <MemoryRouter initialEntries={["/"]}>
+        <App />
+      </MemoryRouter>,
+    );
+
+    expect(screen.getByText("Cached briefing title")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Cached recent topic/i })).toBeInTheDocument();
+    expect(screen.queryByText("Loading recent topics...")).not.toBeInTheDocument();
+  });
 });
