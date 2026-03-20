@@ -13,12 +13,14 @@ from app.infrastructure.db.session import get_db_session
 from app.main import create_app
 from app.presentation.http.routers import runs as runs_router
 from app.presentation.http.routers.runs import get_run_executor
+from app.services.dashboard_briefing import clear_briefing_cache_for_tests
 
 
 RunExecutor = Callable[[int, sessionmaker[Session]], None]
 
 
 def make_client(run_executor: RunExecutor | None = None) -> tuple[TestClient, sessionmaker[Session]]:
+    clear_briefing_cache_for_tests()
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -232,6 +234,80 @@ def test_execute_run_keeps_duration_ms_nullable_when_pipeline_crashes(monkeypatc
         assert len(source_rows) == 5
         assert {source.status for source in source_rows} == {"failed"}
         assert all(source.duration_ms is None for source in source_rows)
+
+
+def test_execute_run_triggers_briefing_cache_refresh(monkeypatch: object) -> None:
+    _, session_factory = make_client()
+    with session_factory() as db_session:
+        profile = seed_profile(db_session)
+        run = Run(
+            profile_id=profile.id,
+            status="pending",
+            input_snapshot_json={"language": "en", "regions": ["US"], "seeds": ["ai"]},
+        )
+        db_session.add(run)
+        db_session.commit()
+        db_session.refresh(run)
+
+        for source_key in ["google_trends", "hackernews", "producthunt", "reddit", "youtube"]:
+            db_session.add(
+                RunSource(
+                    run_id=run.id,
+                    source=source_key,
+                    status="pending",
+                    fetched_count=0,
+                    error_text=None,
+                    duration_ms=None,
+                )
+            )
+        db_session.commit()
+
+    class _SourceResult:
+        status = "success"
+        error_message = None
+        duration_ms = 50
+        signals = [{"id": "signal"}]
+
+    class _FakePipelineResult:
+        run_summary = type(
+            "RunSummary",
+            (),
+            {
+                "results": {
+                    "google_trends": _SourceResult(),
+                    "reddit": _SourceResult(),
+                    "hackernews": _SourceResult(),
+                    "producthunt": _SourceResult(),
+                    "youtube": _SourceResult(),
+                }
+            },
+        )()
+        clusters: list[object] = []
+        explained_candidates: list[object] = []
+        metrics = type("Metrics", (), {"candidate_count": 0, "source_failures": 0})()
+
+    class _FakePipeline:
+        def run(self, **_: object) -> object:
+            return _FakePipelineResult()
+
+    refresh_calls: list[int] = []
+
+    def fake_refresh(*, db_session: Session) -> None:
+        latest_row = db_session.query(Run.id).order_by(Run.id.desc()).first()
+        if latest_row is not None:
+            refresh_calls.append(int(latest_row[0]))
+
+    monkeypatch.setattr(runs_router, "_build_pipeline", lambda: _FakePipeline())
+    monkeypatch.setattr(runs_router, "_persist_candidates", lambda **_: None)
+    monkeypatch.setattr(runs_router, "refresh_briefing_cache_for_latest_run", fake_refresh)
+
+    runs_router._execute_run(run.id, session_factory)
+
+    with session_factory() as verify_session:
+        stored_run = verify_session.get(Run, run.id)
+        assert stored_run is not None
+        assert stored_run.status == "completed"
+    assert refresh_calls == [run.id]
 
 
 def test_get_run_by_id_returns_404_when_not_found() -> None:

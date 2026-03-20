@@ -37,6 +37,7 @@ from app.infrastructure.sources import (
     YouTubeSourceConnector,
 )
 from app.presentation.http.schemas.run import RunOut, RunSourceOut
+from app.services.dashboard_briefing import refresh_briefing_cache_for_latest_run
 from app.services.trend_pipeline import TrendPipeline
 
 DbSession = Annotated[Session, Depends(get_db_session)]
@@ -340,6 +341,16 @@ def _execute_run(run_id: int, session_factory: sessionmaker[Session]) -> None:
             run=run,
             target_status="completed",
         )
+        try:
+            refresh_briefing_cache_for_latest_run(db_session=db_session)
+        except Exception as exc:  # noqa: BLE001
+            log_event(
+                logger,
+                logging.WARNING,
+                "run.briefing_cache_refresh_failed",
+                run_id=run_id,
+                error_message=str(exc),
+            )
         log_event(
             logger,
             logging.INFO,

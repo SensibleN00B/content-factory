@@ -1,7 +1,9 @@
 from __future__ import annotations
 
 from collections import defaultdict
+from dataclasses import dataclass
 from datetime import UTC, datetime
+from threading import Lock
 
 from sqlalchemy import func, select
 from sqlalchemy.orm import Session
@@ -33,9 +35,112 @@ from app.services.briefing_summarizer import (
 _RECENT_RUN_WINDOW = 5
 _RECENT_TOPICS_LIMIT = 20
 _BRIEFING_TEMPORARILY_UNAVAILABLE = "AI briefing is temporarily unavailable."
+_BRIEFING_PREPARING_MESSAGE = "AI briefing is being prepared after the latest completed run."
+
+
+@dataclass(frozen=True)
+class _DashboardProjection:
+    generated_at: datetime
+    latest_run: DashboardLatestRunOut
+    recent_topics: list[DashboardRecentTopicOut]
+    pipeline_metrics: DashboardPipelineMetricsOut
+    source_health: DashboardSourceHealthOut
+    context: BriefingContext
+
+
+@dataclass(frozen=True)
+class _BriefingCacheEntry:
+    run_id: int
+    generated_at: datetime
+    briefing_available: bool
+    briefing_unavailable_reason: str | None
+    briefing_items: list[DashboardBriefingItemOut]
+
+
+_BRIEFING_CACHE_BY_RUN: dict[int, _BriefingCacheEntry] = {}
+_BRIEFING_CACHE_LOCK = Lock()
 
 
 def build_dashboard_briefing(*, db_session: Session) -> DashboardBriefingOut:
+    projection = _build_latest_dashboard_projection(db_session=db_session)
+    if projection is None:
+        return _empty_briefing()
+
+    cached_briefing = _get_cached_briefing(run_id=projection.latest_run.id)
+    if cached_briefing is not None:
+        generated_at = cached_briefing.generated_at
+        briefing_available = cached_briefing.briefing_available
+        briefing_unavailable_reason = cached_briefing.briefing_unavailable_reason
+        briefing_items_out = list(cached_briefing.briefing_items)
+    else:
+        generated_at = projection.generated_at
+        briefing_available = False
+        briefing_items_out = []
+        briefing_unavailable_reason = (
+            _default_unavailable_reason(recent_topics=projection.recent_topics)
+            or _BRIEFING_PREPARING_MESSAGE
+        )
+
+    return DashboardBriefingOut(
+        generated_at=generated_at,
+        briefing_available=briefing_available,
+        briefing_unavailable_reason=briefing_unavailable_reason,
+        briefing_items=briefing_items_out,
+        recent_topics=projection.recent_topics,
+        latest_run=projection.latest_run,
+        pipeline_metrics=projection.pipeline_metrics,
+        source_health=projection.source_health,
+    )
+
+
+def refresh_briefing_cache_for_latest_run(*, db_session: Session) -> None:
+    projection = _build_latest_dashboard_projection(db_session=db_session)
+    if projection is None:
+        return
+
+    latest_run_id = projection.latest_run.id
+    mode = settings.briefing_summarizer_mode.strip().lower()
+    reason = _default_unavailable_reason(recent_topics=projection.recent_topics)
+    if reason is not None:
+        _set_cached_briefing(
+            run_id=latest_run_id,
+            briefing_available=False,
+            briefing_unavailable_reason=reason,
+            briefing_items=[],
+        )
+        return
+
+    summarizer = resolve_briefing_summarizer(
+        mode=mode,
+        api_key=settings.openai_api_key,
+        model=settings.briefing_summarizer_model,
+        base_url=settings.openai_api_base_url,
+        timeout_seconds=settings.briefing_summarizer_timeout_seconds,
+        max_retries=settings.briefing_summarizer_max_retries,
+        retry_backoff_seconds=settings.briefing_summarizer_retry_backoff_seconds,
+    )
+    try:
+        briefing_items = summarizer.summarize(context=projection.context)
+        briefing_items_out = [
+            DashboardBriefingItemOut(kind=item.kind, title=item.title, detail=item.detail)
+            for item in briefing_items
+        ]
+        _set_cached_briefing(
+            run_id=latest_run_id,
+            briefing_available=True,
+            briefing_unavailable_reason=None,
+            briefing_items=briefing_items_out,
+        )
+    except Exception:
+        _set_cached_briefing(
+            run_id=latest_run_id,
+            briefing_available=False,
+            briefing_unavailable_reason=_BRIEFING_TEMPORARILY_UNAVAILABLE,
+            briefing_items=[],
+        )
+
+
+def _build_latest_dashboard_projection(*, db_session: Session) -> _DashboardProjection | None:
     recent_runs = list(
         db_session.scalars(
             select(Run)
@@ -44,9 +149,8 @@ def build_dashboard_briefing(*, db_session: Session) -> DashboardBriefingOut:
             .limit(_RECENT_RUN_WINDOW)
         )
     )
-
     if not recent_runs:
-        return _empty_briefing()
+        return None
 
     latest_run = recent_runs[0]
     latest_run_id = latest_run.id
@@ -108,7 +212,6 @@ def build_dashboard_briefing(*, db_session: Session) -> DashboardBriefingOut:
         latest_run_id=latest_run_id,
         db_session=db_session,
     )
-
     context = BriefingContext(
         topics=[
             BriefingTopic(
@@ -126,53 +229,18 @@ def build_dashboard_briefing(*, db_session: Session) -> DashboardBriefingOut:
         healthy_sources=source_health.healthy_sources,
         failed_sources=source_health.failed_sources,
     )
-    briefing_available = False
-    briefing_unavailable_reason: str | None = None
-    briefing_items_out: list[DashboardBriefingItemOut] = []
-
-    mode = settings.briefing_summarizer_mode.strip().lower()
-    if mode != "llm":
-        briefing_unavailable_reason = "AI briefing is disabled by configuration."
-    elif not settings.openai_api_key.strip():
-        briefing_unavailable_reason = "AI briefing is unavailable because OPENAI_API_KEY is missing."
-    elif not recent_topics:
-        briefing_unavailable_reason = (
-            "AI briefing is unavailable because there are no recent topics to evaluate."
-        )
-    else:
-        summarizer = resolve_briefing_summarizer(
-            mode=mode,
-            api_key=settings.openai_api_key,
-            model=settings.briefing_summarizer_model,
-            base_url=settings.openai_api_base_url,
-            timeout_seconds=settings.briefing_summarizer_timeout_seconds,
-            max_retries=settings.briefing_summarizer_max_retries,
-            retry_backoff_seconds=settings.briefing_summarizer_retry_backoff_seconds,
-        )
-        try:
-            briefing_items = summarizer.summarize(context=context)
-            briefing_items_out = [
-                DashboardBriefingItemOut(kind=item.kind, title=item.title, detail=item.detail)
-                for item in briefing_items
-            ]
-            briefing_available = True
-        except Exception:
-            briefing_unavailable_reason = _BRIEFING_TEMPORARILY_UNAVAILABLE
-
-    return DashboardBriefingOut(
+    return _DashboardProjection(
         generated_at=datetime.now(UTC),
-        briefing_available=briefing_available,
-        briefing_unavailable_reason=briefing_unavailable_reason,
-        briefing_items=briefing_items_out,
-        recent_topics=recent_topics,
         latest_run=DashboardLatestRunOut(
             id=latest_run.id,
             status=latest_run.status,
             created_at=latest_run.created_at,
             candidate_count=int(candidate_count),
         ),
+        recent_topics=recent_topics,
         pipeline_metrics=pipeline_metrics,
         source_health=source_health,
+        context=context,
     )
 
 
@@ -196,6 +264,44 @@ def _empty_briefing() -> DashboardBriefingOut:
         pipeline_metrics=DashboardPipelineMetricsOut(stages=[], drop_reasons={}),
         source_health=source_health,
     )
+
+
+def _default_unavailable_reason(*, recent_topics: list[DashboardRecentTopicOut]) -> str | None:
+    mode = settings.briefing_summarizer_mode.strip().lower()
+    if mode != "llm":
+        return "AI briefing is disabled by configuration."
+    if not settings.openai_api_key.strip():
+        return "AI briefing is unavailable because OPENAI_API_KEY is missing."
+    if not recent_topics:
+        return "AI briefing is unavailable because there are no recent topics to evaluate."
+    return None
+
+
+def _get_cached_briefing(*, run_id: int) -> _BriefingCacheEntry | None:
+    with _BRIEFING_CACHE_LOCK:
+        return _BRIEFING_CACHE_BY_RUN.get(run_id)
+
+
+def _set_cached_briefing(
+    *,
+    run_id: int,
+    briefing_available: bool,
+    briefing_unavailable_reason: str | None,
+    briefing_items: list[DashboardBriefingItemOut],
+) -> None:
+    with _BRIEFING_CACHE_LOCK:
+        _BRIEFING_CACHE_BY_RUN[run_id] = _BriefingCacheEntry(
+            run_id=run_id,
+            generated_at=datetime.now(UTC),
+            briefing_available=briefing_available,
+            briefing_unavailable_reason=briefing_unavailable_reason,
+            briefing_items=list(briefing_items),
+        )
+
+
+def clear_briefing_cache_for_tests() -> None:
+    with _BRIEFING_CACHE_LOCK:
+        _BRIEFING_CACHE_BY_RUN.clear()
 
 
 def _load_labels_map(*, db_session: Session, topic_cluster_ids: list[int]) -> dict[int, list[str]]:

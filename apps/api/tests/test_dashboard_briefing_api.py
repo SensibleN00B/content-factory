@@ -22,9 +22,14 @@ from app.infrastructure.db.seeds import ensure_default_labels
 from app.infrastructure.db.session import get_db_session
 from app.main import create_app
 from app.services.briefing_summarizer import LlmBriefingSummarizer, LlmRetryableError
+from app.services.dashboard_briefing import (
+    clear_briefing_cache_for_tests,
+    refresh_briefing_cache_for_latest_run,
+)
 
 
 def make_client() -> tuple[TestClient, sessionmaker[Session]]:
+    clear_briefing_cache_for_tests()
     engine = create_engine(
         "sqlite+pysqlite:///:memory:",
         connect_args={"check_same_thread": False},
@@ -411,6 +416,8 @@ def test_dashboard_briefing_uses_llm_summarizer_when_configured(monkeypatch) -> 
     try:
         settings.briefing_summarizer_mode = "llm"
         settings.openai_api_key = "sk-test"
+        with session_factory() as db_session:
+            refresh_briefing_cache_for_latest_run(db_session=db_session)
         response = client.get("/api/dashboard/briefing")
     finally:
         settings.briefing_summarizer_mode = previous_mode
@@ -490,6 +497,8 @@ def test_dashboard_briefing_retries_llm_before_success(monkeypatch) -> None:
     try:
         settings.briefing_summarizer_mode = "llm"
         settings.openai_api_key = "sk-test"
+        with session_factory() as db_session:
+            refresh_briefing_cache_for_latest_run(db_session=db_session)
         response = client.get("/api/dashboard/briefing")
     finally:
         settings.briefing_summarizer_mode = previous_mode
@@ -522,3 +531,99 @@ def test_dashboard_briefing_marks_unavailable_when_llm_mode_is_requested_without
     assert body["briefing_available"] is False
     assert body["briefing_items"] == []
     assert isinstance(body["briefing_unavailable_reason"], str)
+
+
+def test_dashboard_briefing_read_path_uses_cached_items_without_new_llm_call(monkeypatch) -> None:
+    client, session_factory = make_client()
+    with session_factory() as db_session:
+        seed_dashboard_data(db_session)
+
+    def fake_request_response(
+        self: LlmBriefingSummarizer,
+        *,
+        prompt: str,
+    ) -> dict[str, object]:
+        assert "Generate 4-5 concise briefing bullets" in prompt
+        return {
+            "output": [
+                {
+                    "type": "message",
+                    "content": [
+                        {
+                            "type": "output_text",
+                            "text": json.dumps(
+                                {
+                                    "briefing_items": [
+                                        {
+                                            "kind": "rising",
+                                            "title": "Cached LLM briefing",
+                                            "detail": "Should be served from cache on read.",
+                                        },
+                                        {
+                                            "kind": "stable",
+                                            "title": "Stable",
+                                            "detail": "Stable detail.",
+                                        },
+                                        {
+                                            "kind": "new",
+                                            "title": "New",
+                                            "detail": "New detail.",
+                                        },
+                                        {
+                                            "kind": "review_first",
+                                            "title": "Review",
+                                            "detail": "Review detail.",
+                                        },
+                                    ]
+                                }
+                            ),
+                        }
+                    ],
+                }
+            ]
+        }
+
+    monkeypatch.setattr(
+        LlmBriefingSummarizer,
+        "_request_response",
+        fake_request_response,
+    )
+
+    previous_mode = settings.briefing_summarizer_mode
+    previous_api_key = settings.openai_api_key
+    try:
+        settings.briefing_summarizer_mode = "llm"
+        settings.openai_api_key = "sk-test"
+        with session_factory() as db_session:
+            refresh_briefing_cache_for_latest_run(db_session=db_session)
+    finally:
+        settings.briefing_summarizer_mode = previous_mode
+        settings.openai_api_key = previous_api_key
+
+    def unexpected_request(
+        self: LlmBriefingSummarizer,
+        *,
+        prompt: str,
+    ) -> dict[str, object]:
+        raise AssertionError("LLM should not be called during dashboard read path.")
+
+    monkeypatch.setattr(
+        LlmBriefingSummarizer,
+        "_request_response",
+        unexpected_request,
+    )
+
+    previous_mode = settings.briefing_summarizer_mode
+    previous_api_key = settings.openai_api_key
+    try:
+        settings.briefing_summarizer_mode = "llm"
+        settings.openai_api_key = "sk-test"
+        response = client.get("/api/dashboard/briefing")
+    finally:
+        settings.briefing_summarizer_mode = previous_mode
+        settings.openai_api_key = previous_api_key
+
+    assert response.status_code == 200
+    body = response.json()
+    assert body["briefing_available"] is True
+    assert body["briefing_items"][0]["title"] == "Cached LLM briefing"
