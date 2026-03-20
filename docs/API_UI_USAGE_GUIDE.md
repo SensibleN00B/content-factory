@@ -111,9 +111,14 @@ Run response includes:
     - `pipeline_metrics` (stage-by-stage kept/dropped/drop_rate + drop reasons)
     - `source_health` (healthy/failed source counts)
   - Summarization mode:
-    - `BRIEFING_SUMMARIZER_MODE=rules` (default): deterministic backend bullets.
     - `BRIEFING_SUMMARIZER_MODE=llm`: uses OpenAI Responses API when `OPENAI_API_KEY` is set.
-    - On provider error or missing key, backend falls back to deterministic rules automatically.
+    - If provider fails or key is missing, API returns unavailable state:
+      - `briefing_available=false`
+      - `briefing_unavailable_reason` with explanation
+  - Performance behavior:
+    - Dashboard read path does not wait for a live LLM call.
+    - LLM briefing is cached by latest completed run.
+    - Cache refresh runs after a new discovery run completes.
 
 ## 4. Operational Notes
 
