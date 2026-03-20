@@ -8,7 +8,7 @@
 
 ## Last Updated
 
-- Date: 2026-03-18
+- Date: 2026-03-20
 - Updated by: Codex
 
 ## Completed
@@ -53,12 +53,15 @@
 - `REL-001`: MVP release checklist and one-command smoke script added (`scripts/smoke.ps1`)
 - `REL-002`: post-release feedback loop checklist documented
 - Python workflow standardized on `uv`
+- `BE-007`: dashboard briefing API implemented (`GET /api/dashboard/briefing`) with latest run summary, source health, movement classification, pipeline funnel metrics, and LLM-first briefing synthesis
+- `BE-008`: briefing reliability hardening added (OpenAI Responses payload fix, retry/backoff, explicit unavailable state via `briefing_available` and `briefing_unavailable_reason`, no synthetic rules fallback)
 
 ## Timeline Logs
 
 - `docs/logs/2026-03-13-session.md`
 - `docs/logs/2026-03-16-session.md`
 - `docs/logs/2026-03-17-session.md`
+- `docs/logs/2026-03-20-session.md`
 
 ## Latest Commit
 
