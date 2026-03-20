@@ -81,5 +81,6 @@ dist-ssr/
 # Temporary files
 tmp/
 temp/
+.codex-skill-staging/
 
 project files/
