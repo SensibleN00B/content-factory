@@ -66,7 +66,58 @@ export type TopicLabelResponse = {
   created_at: string;
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://localhost:8000";
+export type DashboardBriefingItemResponse = {
+  kind: string;
+  title: string;
+  detail: string;
+};
+
+export type DashboardRecentTopicResponse = {
+  candidate_id: number;
+  run_id: number;
+  canonical_topic: string;
+  trend_score: number;
+  movement: string;
+  why_now: string | null;
+  source_count: number;
+  signal_count: number;
+  labels: string[];
+  created_at: string;
+};
+
+export type DashboardPipelineStageResponse = {
+  stage_key: string;
+  label: string;
+  input_count: number;
+  kept_count: number;
+  dropped_count: number;
+  drop_rate: number;
+};
+
+export type DashboardBriefingResponse = {
+  generated_at: string;
+  briefing_available: boolean;
+  briefing_unavailable_reason: string | null;
+  briefing_items: DashboardBriefingItemResponse[];
+  recent_topics: DashboardRecentTopicResponse[];
+  latest_run: {
+    id: number;
+    status: string;
+    created_at: string;
+    candidate_count: number;
+  };
+  pipeline_metrics: {
+    stages: DashboardPipelineStageResponse[];
+    drop_reasons: Record<string, number>;
+  };
+  source_health: {
+    total_sources: number;
+    healthy_sources: number;
+    failed_sources: number;
+  };
+};
+
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? "http://127.0.0.1:8000";
 
 export async function getHealthStatus(): Promise<HealthStatus> {
   const response = await fetch(`${API_BASE_URL}/health`, {
@@ -230,4 +281,19 @@ export async function removeTopicLabel(topicClusterId: number, label: string): P
   if (!response.ok) {
     throw new Error(`Remove label failed: HTTP ${response.status}`);
   }
+}
+
+export async function getDashboardBriefing(): Promise<DashboardBriefingResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/dashboard/briefing`, {
+    method: "GET",
+    headers: {
+      Accept: "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error(`Dashboard briefing fetch failed: HTTP ${response.status}`);
+  }
+
+  return (await response.json()) as DashboardBriefingResponse;
 }

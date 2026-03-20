@@ -1,12 +1,10 @@
 import { useMemo, useState } from "react";
 import { Link } from "react-router-dom";
 
-import {
-  addTopicLabel,
-  getCandidates,
-  removeTopicLabel,
-  type CandidateResponse,
-} from "../lib/api";
+import { EmptyState } from "../components/EmptyState";
+import { PageHeader } from "../components/PageHeader";
+import { SectionCard } from "../components/SectionCard";
+import { addTopicLabel, getCandidates, removeTopicLabel, type CandidateResponse } from "../lib/api";
 
 type ShortlistState = "idle" | "loading" | "ready" | "error";
 const ONLY_NEW_LABELS = ["selected_for_post", "published"];
@@ -115,27 +113,14 @@ export function ShortlistPage() {
   }
 
   return (
-    <main className="page">
-      <section className="panel settings-panel">
-        <div className="panel-head">
-          <div>
-            <p className="eyebrow">Shortlist</p>
-            <h1>Ranked Topic Candidates</h1>
-            <p className="subtitle">Review trend score, source coverage, and why-now summary.</p>
-          </div>
-          <div className="panel-links">
-            <Link to="/" className="ghost-link">
-              Dashboard
-            </Link>
-            <Link to="/settings" className="ghost-link">
-              Settings
-            </Link>
-            <Link to="/runs" className="ghost-link">
-              Run console
-            </Link>
-          </div>
-        </div>
+    <div className="page-content">
+      <PageHeader
+        eyebrow="Review"
+        title="Ranked Topic Candidates"
+        subtitle="Topic candidates ranked by trend score with immediate curation actions."
+      />
 
+      <SectionCard title="Shortlist filters" subtitle="Constrain candidates before loading.">
         <div className="filter-grid">
           <label>
             Run ID (optional)
@@ -179,85 +164,84 @@ export function ShortlistPage() {
             </button>
           ))}
         </div>
+      </SectionCard>
 
+      <SectionCard title="Topic candidates" subtitle="Load and curate ranked opportunities.">
         <div className="settings-actions">
           <button type="button" onClick={loadCandidates} disabled={!canLoad}>
             {state === "loading" ? "Loading..." : "Load shortlist"}
           </button>
-          {state === "error" && <p className="error">{errorMessage}</p>}
-          {state === "ready" && <p className="muted">{items.length} topics loaded</p>}
+          {state === "error" ? <p className="error">{errorMessage}</p> : null}
+          {state === "ready" ? <p className="muted">{items.length} topics loaded</p> : null}
         </div>
 
-        <div className="source-table-wrap">
-          <table className="source-table">
-            <thead>
-              <tr>
-                <th>Topic</th>
-                <th>Score</th>
-                <th>Sources</th>
-                <th>Why now</th>
-                <th>Labels</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {items.map((item) => (
-                <tr key={item.id}>
-                  <td>
-                    <Link to={`/shortlist/${item.id}`} className="topic-link">
-                      {item.canonical_topic}
-                    </Link>
-                  </td>
-                  <td>{item.trend_score}</td>
-                  <td>
-                    {item.source_count} sources / {item.signal_count} signals
-                  </td>
-                  <td>{item.why_now ?? "-"}</td>
-                  <td>
-                    {item.labels.length === 0 ? (
-                      "-"
-                    ) : (
+        {items.length === 0 ? (
+          <EmptyState title="No candidates yet." detail="Start a run, then load shortlist." />
+        ) : (
+          <div className="source-table-wrap">
+            <table className="source-table">
+              <thead>
+                <tr>
+                  <th>Topic</th>
+                  <th>Score</th>
+                  <th>Sources</th>
+                  <th>Why now</th>
+                  <th>Labels</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {items.map((item) => (
+                  <tr key={item.id}>
+                    <td>
+                      <Link to={`/shortlist/${item.id}`} className="topic-link">
+                        {item.canonical_topic}
+                      </Link>
+                    </td>
+                    <td>{item.trend_score}</td>
+                    <td>
+                      {item.source_count} sources / {item.signal_count} signals
+                    </td>
+                    <td>{item.why_now ?? "-"}</td>
+                    <td>
+                      {item.labels.length === 0 ? (
+                        "-"
+                      ) : (
+                        <div className="chip-row">
+                          {item.labels.map((label) => (
+                            <button
+                              key={`${item.id}-${label}`}
+                              type="button"
+                              className="chip"
+                              onClick={() => handleRemoveLabel(item, label)}
+                            >
+                              {label} ×
+                            </button>
+                          ))}
+                        </div>
+                      )}
+                    </td>
+                    <td>
                       <div className="chip-row">
-                        {item.labels.map((label) => (
+                        {QUICK_LABEL_ACTIONS.map((label) => (
                           <button
-                            key={`${item.id}-${label}`}
+                            key={`${item.id}-add-${label}`}
                             type="button"
                             className="chip"
-                            onClick={() => handleRemoveLabel(item, label)}
+                            onClick={() => handleAddLabel(item, label)}
                           >
-                            {label} ×
+                            +{label}
                           </button>
                         ))}
                       </div>
-                    )}
-                  </td>
-                  <td>
-                    <div className="chip-row">
-                      {QUICK_LABEL_ACTIONS.map((label) => (
-                        <button
-                          key={`${item.id}-add-${label}`}
-                          type="button"
-                          className="chip"
-                          onClick={() => handleAddLabel(item, label)}
-                        >
-                          +{label}
-                        </button>
-                      ))}
-                    </div>
-                  </td>
-                </tr>
-              ))}
-              {items.length === 0 && (
-                <tr>
-                  <td colSpan={6} className="muted">
-                    No candidates yet. Start a run, then load shortlist.
-                  </td>
-                </tr>
-              )}
-            </tbody>
-          </table>
-        </div>
-      </section>
-    </main>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </SectionCard>
+    </div>
   );
 }

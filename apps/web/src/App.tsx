@@ -1,5 +1,6 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 
+import { AppShell } from "./components/AppShell";
 import { HomePage } from "./pages/HomePage";
 import { RunConsolePage } from "./pages/RunConsolePage";
 import { ShortlistPage } from "./pages/ShortlistPage";
@@ -9,11 +10,13 @@ import { TopicDetailsPage } from "./pages/TopicDetailsPage";
 export function App() {
   return (
     <Routes>
-      <Route path="/" element={<HomePage />} />
-      <Route path="/runs" element={<RunConsolePage />} />
-      <Route path="/shortlist" element={<ShortlistPage />} />
-      <Route path="/shortlist/:candidateId" element={<TopicDetailsPage />} />
-      <Route path="/settings" element={<SettingsPage />} />
+      <Route element={<AppShell />}>
+        <Route index element={<HomePage />} />
+        <Route path="runs" element={<RunConsolePage />} />
+        <Route path="shortlist" element={<ShortlistPage />} />
+        <Route path="shortlist/:candidateId" element={<TopicDetailsPage />} />
+        <Route path="settings" element={<SettingsPage />} />
+      </Route>
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

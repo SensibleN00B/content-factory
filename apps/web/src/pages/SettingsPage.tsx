@@ -1,6 +1,9 @@
 import { type FormEvent, useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 
+import { EmptyState } from "../components/EmptyState";
+import { LoadingPanel } from "../components/LoadingPanel";
+import { PageHeader } from "../components/PageHeader";
+import { SectionCard } from "../components/SectionCard";
 import { getProfile, saveProfile, type ProfilePayload } from "../lib/api";
 
 type LoadState = "loading" | "ready" | "error";
@@ -103,7 +106,10 @@ export function SettingsPage() {
     };
   }, []);
 
-  const canSubmit = useMemo(() => loadState === "ready" && saveState !== "saving", [loadState, saveState]);
+  const canSubmit = useMemo(
+    () => loadState === "ready" && saveState !== "saving",
+    [loadState, saveState],
+  );
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -129,124 +135,113 @@ export function SettingsPage() {
     }
   }
 
-  if (loadState === "loading") {
-    return (
-      <main className="page">
-        <section className="panel">
-          <p className="muted">Loading profile settings...</p>
-        </section>
-      </main>
-    );
-  }
-
-  if (loadState === "error") {
-    return (
-      <main className="page">
-        <section className="panel">
-          <h1>Settings</h1>
-          <p className="error">Cannot load profile: {errorMessage}</p>
-          <Link to="/" className="ghost-link">
-            Back to dashboard
-          </Link>
-        </section>
-      </main>
-    );
-  }
-
   return (
-    <main className="page">
-      <section className="panel settings-panel">
-        <div className="panel-head">
-          <div>
-            <p className="eyebrow">Profile Settings</p>
-            <h1>Discovery Inputs</h1>
-          </div>
-          <div className="panel-links">
-            <Link to="/" className="ghost-link">
-              Dashboard
-            </Link>
-            <Link to="/runs" className="ghost-link">
-              Run console
-            </Link>
-            <Link to="/shortlist" className="ghost-link">
-              Shortlist
-            </Link>
-          </div>
-        </div>
+    <div className="page-content">
+      <PageHeader
+        eyebrow="Setup"
+        title="Discovery Inputs"
+        subtitle="Tune discovery profile, audience targeting, and filtering rules before launching runs."
+      />
 
-        <form className="settings-form" onSubmit={onSubmit}>
-          <label>
-            Niche
-            <textarea
-              value={formState.niche}
-              onChange={(event) => onChange("niche", event.target.value)}
-              rows={3}
-            />
-          </label>
+      {loadState === "loading" ? <LoadingPanel message="Loading profile settings..." /> : null}
 
-          <label>
-            ICP
-            <textarea
-              value={formState.icp}
-              onChange={(event) => onChange("icp", event.target.value)}
-              rows={3}
-            />
-          </label>
+      {loadState === "error" ? (
+        <SectionCard title="Profile Unavailable">
+          <EmptyState title="Cannot load profile." detail={errorMessage} />
+        </SectionCard>
+      ) : null}
 
-          <label>
-            Regions
-            <textarea
-              value={formState.regions}
-              onChange={(event) => onChange("regions", event.target.value)}
-              rows={2}
-            />
-          </label>
+      {loadState === "ready" ? (
+        <form className="settings-layout" onSubmit={onSubmit}>
+          <SectionCard
+            title="Discovery profile"
+            subtitle="Define market themes and seed terms that should shape signal collection."
+          >
+            <div className="field-grid">
+              <label>
+                Niche
+                <textarea
+                  value={formState.niche}
+                  onChange={(event) => onChange("niche", event.target.value)}
+                  rows={4}
+                />
+              </label>
+              <label>
+                Seed keywords
+                <textarea
+                  value={formState.seeds}
+                  onChange={(event) => onChange("seeds", event.target.value)}
+                  rows={4}
+                />
+              </label>
+            </div>
+          </SectionCard>
 
-          <label>
-            Language
-            <input
-              value={formState.language}
-              onChange={(event) => onChange("language", event.target.value)}
-              placeholder="en"
-            />
-          </label>
+          <SectionCard
+            title="Target audience"
+            subtitle="Describe who this discovery should prioritize and where language fit matters."
+          >
+            <div className="field-grid">
+              <label>
+                ICP
+                <textarea
+                  value={formState.icp}
+                  onChange={(event) => onChange("icp", event.target.value)}
+                  rows={4}
+                />
+              </label>
+              <label>
+                Regions
+                <textarea
+                  value={formState.regions}
+                  onChange={(event) => onChange("regions", event.target.value)}
+                  rows={4}
+                />
+              </label>
+              <label>
+                Language
+                <input
+                  value={formState.language}
+                  onChange={(event) => onChange("language", event.target.value)}
+                  placeholder="en"
+                />
+              </label>
+            </div>
+          </SectionCard>
 
-          <label>
-            Seed Keywords
-            <textarea
-              value={formState.seeds}
-              onChange={(event) => onChange("seeds", event.target.value)}
-              rows={5}
-            />
-          </label>
-
-          <label>
-            Negative Keywords
-            <textarea
-              value={formState.negatives}
-              onChange={(event) => onChange("negatives", event.target.value)}
-              rows={4}
-            />
-          </label>
-
-          <label>
-            Preferred Content Types
-            <textarea
-              value={formState.contentTypes}
-              onChange={(event) => onChange("contentTypes", event.target.value)}
-              rows={3}
-            />
-          </label>
+          <SectionCard
+            title="Filtering and output"
+            subtitle="Exclude noisy topics and define preferred output content formats."
+          >
+            <div className="field-grid">
+              <label>
+                Negative keywords
+                <textarea
+                  value={formState.negatives}
+                  onChange={(event) => onChange("negatives", event.target.value)}
+                  rows={4}
+                />
+              </label>
+              <label>
+                Preferred content types
+                <textarea
+                  value={formState.contentTypes}
+                  onChange={(event) => onChange("contentTypes", event.target.value)}
+                  rows={4}
+                />
+              </label>
+            </div>
+          </SectionCard>
 
           <div className="settings-actions">
             <button type="submit" disabled={!canSubmit}>
               {saveState === "saving" ? "Saving..." : "Save settings"}
             </button>
-            {saveState === "saved" && <p className="ok">Saved.</p>}
-            {saveState === "error" && <p className="error">Save failed: {errorMessage}</p>}
+            {saveState === "saved" ? <p className="ok">Saved.</p> : null}
+            {saveState === "error" ? <p className="error">Save failed: {errorMessage}</p> : null}
           </div>
         </form>
-      </section>
-    </main>
+      ) : null}
+    </div>
   );
 }

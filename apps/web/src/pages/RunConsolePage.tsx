@@ -1,6 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
 
+import { EmptyState } from "../components/EmptyState";
+import { PageHeader } from "../components/PageHeader";
+import { SectionCard } from "../components/SectionCard";
+import { StatMetric } from "../components/StatMetric";
+import { StatusBadge } from "../components/StatusBadge";
 import { createRun, getRun, type RunResponse } from "../lib/api";
 
 type RunUiState = "idle" | "creating" | "polling" | "error";
@@ -16,6 +20,14 @@ const SOURCE_LABELS: Record<string, string> = {
   youtube: "YouTube",
 };
 
+function formatDateTime(value: string): string {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) {
+    return value;
+  }
+  return date.toLocaleString();
+}
+
 export function RunConsolePage() {
   const [runState, setRunState] = useState<RunUiState>("idle");
   const [currentRun, setCurrentRun] = useState<RunResponse | null>(null);
@@ -28,6 +40,13 @@ export function RunConsolePage() {
     }
     return ACTIVE_RUN_STATUSES.has(currentRun.status) && pollAttempts < MAX_POLL_ATTEMPTS;
   }, [currentRun, pollAttempts]);
+
+  const completedSourcesCount = useMemo(() => {
+    if (currentRun === null) {
+      return 0;
+    }
+    return currentRun.sources.filter((source) => source.status === "completed").length;
+  }, [currentRun]);
 
   useEffect(() => {
     if (!shouldPoll || currentRun === null) {
@@ -102,54 +121,43 @@ export function RunConsolePage() {
   }
 
   return (
-    <main className="page">
-      <section className="panel settings-panel">
-        <div className="panel-head">
-          <div>
-            <p className="eyebrow">Run Console</p>
-            <h1>Manual Trend Discovery Run</h1>
-            <p className="subtitle">Trigger run and watch source-level collection states.</p>
-          </div>
-          <div className="panel-links">
-            <Link to="/" className="ghost-link">
-              Dashboard
-            </Link>
-            <Link to="/settings" className="ghost-link">
-              Settings
-            </Link>
-            <Link to="/shortlist" className="ghost-link">
-              Shortlist
-            </Link>
-          </div>
-        </div>
+    <div className="page-content">
+      <PageHeader
+        eyebrow="Operations"
+        title="Manual Trend Discovery Run"
+        subtitle="Run status, source execution quality, and data collection health."
+      />
 
-        <div className="settings-actions">
-          <button type="button" onClick={startRun} disabled={runState === "creating" || runState === "polling"}>
-            {runState === "creating" ? "Starting..." : "Start run"}
-          </button>
-          <button type="button" className="secondary-btn" onClick={refreshRun} disabled={currentRun === null}>
-            Refresh
-          </button>
-          {runState === "polling" && <p className="muted">Polling run status...</p>}
-          {runState === "error" && <p className="error">{errorMessage}</p>}
-        </div>
+      <div className="settings-actions">
+        <button type="button" onClick={startRun} disabled={runState === "creating" || runState === "polling"}>
+          {runState === "creating" ? "Starting..." : "Start run"}
+        </button>
+        <button type="button" className="secondary-btn" onClick={refreshRun} disabled={currentRun === null}>
+          Refresh
+        </button>
+        {runState === "polling" ? <p className="muted">Polling run status...</p> : null}
+        {runState === "error" ? <p className="error">{errorMessage}</p> : null}
+      </div>
 
-        {currentRun === null ? (
-          <p className="muted">No run started yet.</p>
-        ) : (
-          <div className="run-console">
-            <div className="run-summary">
-              <p>
-                Run ID: <strong>{currentRun.id}</strong>
-              </p>
-              <p>
-                Status: <strong className={`status-${currentRun.status}`}>{currentRun.status}</strong>
-              </p>
-              <p>
-                Created: <strong>{new Date(currentRun.created_at).toLocaleString()}</strong>
-              </p>
+      {currentRun === null ? (
+        <SectionCard title="Run status">
+          <EmptyState title="No run started yet." detail="Start a run to populate this operational board." />
+        </SectionCard>
+      ) : (
+        <div className="run-layout">
+          <SectionCard title="Run status">
+            <div className="stats-grid">
+              <StatMetric label="Run ID" value={currentRun.id} />
+              <StatMetric label="Lifecycle" value={currentRun.status} />
+              <StatMetric label="Created" value={formatDateTime(currentRun.created_at)} />
+              <StatMetric
+                label="Source completion"
+                value={`${completedSourcesCount}/${currentRun.sources.length}`}
+              />
             </div>
+          </SectionCard>
 
+          <SectionCard title="Sources board">
             <div className="source-table-wrap">
               <table className="source-table">
                 <thead>
@@ -166,7 +174,7 @@ export function RunConsolePage() {
                     <tr key={source.source}>
                       <td>{SOURCE_LABELS[source.source] ?? source.source}</td>
                       <td>
-                        <span className={`status-chip status-${source.status}`}>{source.status}</span>
+                        <StatusBadge value={source.status} />
                       </td>
                       <td>{source.fetched_count}</td>
                       <td>{source.duration_ms ?? "-"}</td>
@@ -176,14 +184,9 @@ export function RunConsolePage() {
                 </tbody>
               </table>
             </div>
-            {pollAttempts >= MAX_POLL_ATTEMPTS && ACTIVE_RUN_STATUSES.has(currentRun.status) && (
-              <p className="muted">
-                Auto-poll paused after {MAX_POLL_ATTEMPTS} checks. Click Refresh to continue manually.
-              </p>
-            )}
-          </div>
-        )}
-      </section>
-    </main>
+          </SectionCard>
+        </div>
+      )}
+    </div>
   );
 }

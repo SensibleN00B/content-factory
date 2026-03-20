@@ -9,10 +9,10 @@ This guide documents how to operate the current Trend Discovery MVP without extr
 3. Start services:
    - `docker compose -f infra/docker-compose.yml up --build -d`
 4. Open:
-   - API: `http://localhost:8000`
+   - API: `http://127.0.0.1:8000`
    - Web: `http://localhost:5173`
 5. Verify API:
-   - `GET http://localhost:8000/health`
+   - `GET http://127.0.0.1:8000/health`
 
 ## 2. Core Workflow (UI)
 
@@ -25,7 +25,7 @@ This guide documents how to operate the current Trend Discovery MVP without extr
 
 ## 3. API Reference
 
-Base URL: `http://localhost:8000`
+Base URL: `http://127.0.0.1:8000`
 
 ### Health
 
@@ -100,12 +100,28 @@ Run response includes:
 - `GET /api/candidates/{candidate_id}`
   - Returns candidate details, score breakdown, evidence links, angles
 
+### Dashboard Briefing
+
+- `GET /api/dashboard/briefing`
+  - Returns dashboard-ready briefing data so UI does not compute trend intelligence client-side.
+  - Payload includes:
+    - `briefing_items[]` (4-5 concise summary bullets)
+    - `recent_topics[]` (latest run topics with movement classification)
+    - `latest_run` (metadata + candidate count)
+    - `pipeline_metrics` (stage-by-stage kept/dropped/drop_rate + drop reasons)
+    - `source_health` (healthy/failed source counts)
+  - Summarization mode:
+    - `BRIEFING_SUMMARIZER_MODE=rules` (default): deterministic backend bullets.
+    - `BRIEFING_SUMMARIZER_MODE=llm`: uses OpenAI Responses API when `OPENAI_API_KEY` is set.
+    - On provider error or missing key, backend falls back to deterministic rules automatically.
+
 ## 4. Operational Notes
 
 - No auth in MVP (single-user mode).
 - Run scheduling is manual in MVP.
 - No-repeat behavior is label-based via `exclude_labels`.
 - Logging is structured JSON (controlled by `LOG_LEVEL` and `LOG_JSON`).
+- Dashboard should consume `/api/dashboard/briefing` directly, not derive briefing from raw candidate lists.
 
 ## 5. Common Errors
 
